@@ -57,7 +57,8 @@ These are binding and live in one canonical place:
 
 OMAR OS is organized around **roles** (not model names) and **layers** (thinking vs
 execution), with **three knowledge tiers** (core / domain / project) kept strictly
-separate. GitHub is the durable source of truth; adapters for specific models, tools, and
+separate. The **version-controlled repository** is the durable source of truth (GitHub is
+the current, replaceable hosting adapter); adapters for specific models, tools, and
 services are interchangeable.
 
 ```
@@ -155,7 +156,7 @@ omar_os/
 2. Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/WORKFLOW.md`](docs/WORKFLOW.md).
 3. For any change, follow [`AGENTS.md`](AGENTS.md).
 4. For a new project, copy [`projects/_template/`](projects/_template/) and follow its `PROJECT.md`.
-5. For any meaningful decision, open an ADR using [`templates/decision-template.md`](templates/decision-template.md).
+5. For any **important or hard-to-reverse** decision, open an ADR using [`templates/decision-template.md`](templates/decision-template.md). Trivial choices get a one-line note in the relevant doc or project `DECISIONS.md`; consequential external actions get an **approval record**, not an ADR (see [`docs/SECURITY.md`](docs/SECURITY.md)).
 
 ## Roadmap summary
 

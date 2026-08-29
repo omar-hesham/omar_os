@@ -24,7 +24,7 @@ flowchart TB
     T[Thinking / Orchestration layer<br/>model-agnostic roles]
     E[Execution layer<br/>interchangeable adapters]
     K[Knowledge layer<br/>core / domain / project]
-    S[Source of Truth<br/>GitHub repository]
+    S[Source of Truth<br/>version-controlled repo]
 
     H --> T
     T --> E
@@ -40,7 +40,8 @@ flowchart TB
 - **Execution** — repository inspection, file manipulation, coding, testing, git,
   local runs. Performed by local agents (e.g. Codex) or tools.
 - **Knowledge** — the three tiers (below), version-controlled.
-- **Source of Truth** — this GitHub repository.
+- **Source of Truth** — the **version-controlled repository** (GitHub is the current,
+  replaceable hosting adapter).
 
 ## Role architecture (logical roles, not model names)
 

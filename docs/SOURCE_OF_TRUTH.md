@@ -26,20 +26,26 @@ a version-controlled repo:
 
 ## Data classification (required)
 
-Because the repository may be **public**, every artifact must carry a classification so
-that sensitive material is never committed to the wrong place:
+The public `omar-os` repository is the **public core**; a separate **private workspace**
+holds sensitive material. Classification governs *where* an artifact lives. Core repository
+paths default to `public`; anything sensitive is kept out of the public repo.
 
 | Class | Examples | Where it lives |
 |-------|----------|---------------|
-| **public** | code, principles, architecture, workflows, templates, ADRs | this repository |
-| **internal** | working drafts, non-sensitive project notes | this repository or private workspace |
-| **confidential** | customer information, contracts, academic/thesis material, business data | **private workspace** (see below) |
-| **restricted** | secrets, credentials, financial data | never in git; secrets manager only |
+| **public** | code, principles, architecture, workflows, templates, ADRs | public core repo (default) |
+| **internal** | working drafts, non-sensitive project notes | public core repo **or** private workspace — must carry an explicit `internal` label; not assumed safe, just non-sensitive |
+| **confidential** | customer information, contracts, academic/thesis material, business data, PII | **private version-controlled workspace** (separate private repo or local directory) |
+| **restricted** | financial records, personal sensitive data | **approved secure / encrypted private store** (e.g. encrypted volume, private repo with restricted access) |
+| **credentials** | API keys, passwords, tokens | **secrets manager only** — never in git |
 
-> **Rule:** PII, customer information, academic/research submissions, contracts, and other
-> confidential or restricted material **must not** be committed to a public repository.
-> Store them in a **private workspace** (separate private repo or local directory) and
-> reference them by pointer/metadata only. See [`SECURITY.md`](SECURITY.md).
+> **Rules:**
+> - `public` is the default for anything already in this repo; `internal/confidential/restricted`
+>   artifacts must be **explicitly labelled** and placed per the table above.
+> - Confidential and restricted material **must not** be committed to the public repo — store
+>   it in the private workspace and reference it by pointer/metadata only.
+> - **Financial records are not credentials** — they go to the secure private store, *not* a
+>   secrets manager (only API keys/passwords/tokens go to a secrets manager).
+> - See [`SECURITY.md`](SECURITY.md) and ADR-0002 for enforcement.
 
 ## What should become a file (not just a chat)
 

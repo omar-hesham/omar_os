@@ -1,6 +1,6 @@
 # ADR-0002: Public Core / Private Workspace split, Git ≠ GitHub, single scaffold source
 
-- **Status:** Proposed (becomes Accepted when Omar approves / the branch is merged)
+- **Status:** Accepted (ratified on merge of PR #1, 2026-08-29)
 - **Date:** 2026-08-29
 - **Deciders:** Omar Hesham Safwat (recorded; binding on approval/merge)
 - **Supersedes / relates:** Refines ADR-0001 (foundation). Addresses the pre-merge review

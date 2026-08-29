@@ -17,14 +17,13 @@
 ## 1b. Data classification & the public/private boundary
 
 The public `omar-os` repository is **not** a safe place for sensitive personal data. Every
-artifact must carry a classification (`public | internal | confidential | restricted`; see
-[`SOURCE_OF_TRUTH.md`](SOURCE_OF_TRUTH.md)). Rules:
+artifact must carry a classification (`public | internal | confidential | restricted |
+credentials`; see [`SOURCE_OF_TRUTH.md`](SOURCE_OF_TRUTH.md)). Rules:
 
 - **confidential** (customer information, contracts, academic/thesis submissions, business
-  data, PII) and **restricted** (secrets, financial data) **must not** be committed to the
-  public repo.
-- Confidential/restricted material lives in a **private workspace** (separate private repo or
-  local directory) and is referenced from the public repo by pointer/metadata only.
+  data, PII) and **restricted** (financial records, personal sensitive data) **must not** be
+  committed to the public repo — they live in a **private workspace / secure store**.
+- **credentials** (API keys, passwords, tokens) go to a **secrets manager**, never in git.
 - This split is formalized in
   [`../decisions/ADR-0002-public-private-split.md`](../decisions/ADR-0002-public-private-split.md).
 

@@ -1,8 +1,10 @@
 # Templates — OMAR OS
 
-> Reusable **master templates**. Use these to create new projects, decisions, workflows,
-> agent specs, reviews, and postmortems. The directory [`../projects/_template/`](../projects/_template/)
-> is a *fully instantiated* starter project generated from `project-template.md`.
+> Reusable **master templates**. Use these to create new decisions, workflows, agent specs,
+> reviews, and postmortems. The directory [`../projects/_template/`](../projects/_template/)
+> is the **single source of truth for project scaffolding** (its `PROJECT.md` plus
+> `REQUIREMENTS.md`, `FLOW.md`, `DECISIONS.md`, `TASKS.md`, `REVIEW.md`).
+> `project-template.md` in this folder is a **pointer** to that scaffold, not a second copy.
 
 ## Contents
 

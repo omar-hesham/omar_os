@@ -10,10 +10,14 @@ How OMAR OS makes and records important decisions. Implements constitution princ
 
 ## When to use
 
-Use a formal decision (ADR) for anything **important or hard to reverse**: architecture
-changes, tool/provider selection, process changes, and consequential external actions. For
-trivial choices, a sentence in the relevant doc suffices. **Not every project-lifecycle
-decision needs an ADR** — see scope note below.
+Use a formal decision (ADR) for anything **important or hard to reverse** at the *system*
+level: architecture changes, tool/provider selection, process changes. For
+**trivial choices**, a sentence in the relevant doc suffices. **Not every project-lifecycle
+decision needs an ADR** — see record-types note below.
+
+> **Consequential external actions** (job applications, external messages, production
+> changes, data deletion, financial actions) are handled by **approval records**, not ADRs
+> (constitution principle I). See the *Record types* section.
 
 ## Steps
 

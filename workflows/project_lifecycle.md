@@ -19,7 +19,7 @@ Detailed companion to the lifecycle in [`../docs/WORKFLOW.md`](../docs/WORKFLOW.
 | 6 | **Flow / system logic** | Draw the flow with branches/gates. | Mermaid flow. |
 | 7 | **Logic review** | Review before building. | Review note → may loop to 3. |
 | 8 | **Alternatives** | Enumerate options. | Alternatives list. |
-| 9 | **Decision** | Choose + record *why* (ADR). | [`../decisions/`](../decisions/) entry. |
+| 9 | **Decision** | Choose + record *why*. **Important/hard-to-reverse decisions get an ADR** ([`../decisions/`](../decisions/)); trivial choices get a one-line note in `DECISIONS.md`. | ADR and/or `DECISIONS.md` entry. |
 | 10 | **Implementation plan** | Work packages (Planner). | TASKS. |
 | 11 | **Execution** | Implement (Coder). | Artifacts + commits. |
 | 12 | **Testing** | Validate vs criteria (Tester). | Test report. |
@@ -33,8 +33,10 @@ Detailed companion to the lifecycle in [`../docs/WORKFLOW.md`](../docs/WORKFLOW.
 ## Effort scaling
 
 Not every project needs all 18 stages. Apply the effort-scaling rule
-([`../docs/WORKFLOW.md`](../docs/WORKFLOW.md) §3): low-impact work may stop after stage 9–11;
-high-impact work runs the full sequence with an ADR and postmortem.
+([`../docs/WORKFLOW.md`](../docs/WORKFLOW.md) §3): low-impact work may compress analysis
+(stages 1–9) but **must still pass stage 13 (Review vs objective)** before completion —
+"done" is never declared without a review. High-impact work runs the full sequence with an
+ADR and postmortem.
 
 ## Feedback loops
 

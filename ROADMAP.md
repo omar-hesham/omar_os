@@ -78,9 +78,9 @@ concept lives.
 - **Storage:** folders now; structured store in v0.5 — which format?
 - **First real project:** likely the Career / Opportunity Agent; built on the OS, not in
   the core.
-- **Public/private split (decided in ADR-0002):** the public core repo holds only
-  `public`/`internal` artifacts; confidential/restricted data goes to a private workspace.
-  v0.2 `validate` should enforce this boundary.
+- **Public/private split (decided in ADR-0002):** the public core repo holds only `public`
+  artifacts; `internal`/`confidential`/`restricted` artifacts belong in the private
+  workspace or approved secure store. v0.2 `validate` should enforce this boundary.
 - **File naming:** the repo mixes kebab-case and snake_case; a one-time normalization is a
   future cleanup and does not block merge.
 

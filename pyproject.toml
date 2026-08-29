@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omar-os"
+version = "0.2.0"
+description = "OMAR OS — Project Core (v0.2): local-first project scaffolding, state, and validation."
+readme = "README.md"
+requires-python = ">=3.10"
+# Zero runtime dependencies (stdlib only). See CORE_V0.2_MASTER_PROMPT.md §4.
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.setuptools]
+packages = ["omar_os"]
+
+[project.scripts]
+omar_os = "omar_os.__main__:main"

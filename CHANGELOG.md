@@ -4,11 +4,39 @@ All notable changes to this repository are documented here, in reverse chronolog
 Format inspired by Keep a Changelog. For the plan behind these entries, see
 [`ROADMAP.md`](ROADMAP.md). For decision rationale, see [`decisions/`](decisions/).
 
+## [0.2.0] — 2026-08-29 — CORE v0.2 Project Core implemented (PR #5)
+
+The first executable slice of OMAR OS (per ADR-0003, ratified by PR #4).
+
+### Added
+- `omar_os/` Python package (stdlib only — `json`, `datetime`, `pathlib`, `argparse`,
+  `re`, `dataclasses`; no `jsonschema`/`pydantic` at runtime):
+  - `constants.py` — paths, classifications, lifecycle stages, kebab-case rule.
+  - `schema.py` — `project.json` / `state.json` schemas + inline stdlib validation.
+  - `pathutil.py` — shared path-safety (`Path.resolve()` + `is_relative_to()`, never
+    `os.path.normpath`).
+  - `scaffold.py` — `new-project` copies the single source `projects/_template/`.
+  - `state.py` — `stage` transitions with the principle-J review gate + status mapping.
+  - `validate.py` — four checks: links, classification boundary, scaffold structure, schema.
+  - `__main__.py` — CLI: `new-project` / `validate` / `stage`.
+- `tests/` — first real `pytest` suite (`conftest.py` + 4 test modules) replacing the
+  placeholder; runs offline via a temp copy of the repo.
+- `docs/CORE_V0.2_MASTER_PROMPT.md` — the Master Implementation Prompt that drove this.
+
+### Behavior
+- `new-project` refuses existing names, non-`public` classification in the public repo,
+  and path-unsafe ids (`../`, absolute, slashes, non-kebab-case).
+- `stage complete` is rejected until `review` is in history (principle J).
+- `validate` enforces the public-repo classification boundary and 8-file scaffold presence.
+
+### Notes
+- This closes the `## Unreleased — CORE v0.2 Planning` entry below.
+- LICENSE still pending (see ROADMAP).
+
 ## Unreleased — CORE v0.2 Planning (PR #4)
 
-Foundation v0.1 is **approved and complete** (PR #1–#3 merged). This entry plans — but
-does **not** implement — CORE v0.2. The real `## [0.2.0]` entry is written only when the
-implementation PR (branch `core/v0.2`) merges.
+Foundation v0.1 is **approved and complete** (PR #1–#3 merged). This entry planned — but
+does **not** implement — CORE v0.2 (implementation shipped as `## [0.2.0]` above).
 
 ### Added (planning artifacts)
 - `decisions/ADR-0003-core-v0.2-project-core.md` — **Proposed**; ratifies the v0.2 scope: a

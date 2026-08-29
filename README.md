@@ -4,10 +4,17 @@
 > decides, builds, and learns into a persistent, structured system that works with
 > *any* AI model or execution tool.
 
-**Current stage:** 🧱 Foundation v0.1 — *documentation-first.* The repository currently
+**Current stage:** 🧱 CORE v0.2 — *Project Core (first executable slice).* The repository
 contains the constitution, architecture, knowledge model, role and workflow
-specifications, and project/ADR templates. **No executable software has been built yet.**
-Everything here is a specification until a later phase implements it.
+specifications, project/ADR templates, **and a minimal, local-first Python package**
+(`omar_os`) that scaffolds projects, represents project state, and validates the
+foundation's own rules. Roles/agents beyond v0.2 are still specifications.
+
+> **Try it locally:** `python -m omar_os new-project <name>` scaffolds a project from the
+> single source; `python -m omar_os validate` checks links, classification boundary,
+> scaffold structure, and manifest/state schema; `python -m omar_os stage <project> <stage>`
+> records lifecycle transitions (enforcing the principle-J review gate). See
+> [`docs/CORE_V0.2_MASTER_PROMPT.md`](docs/CORE_V0.2_MASTER_PROMPT.md).
 
 ---
 
@@ -155,15 +162,19 @@ omar_os/
 1. Read [`README.md`](README.md) (this file), then [`PROJECT_CONSTITUTION.md`](PROJECT_CONSTITUTION.md).
 2. Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/WORKFLOW.md`](docs/WORKFLOW.md).
 3. For any change, follow [`AGENTS.md`](AGENTS.md).
-4. For a new project, copy [`projects/_template/`](projects/_template/) and follow its `PROJECT.md`.
-5. For any **important or hard-to-reverse** decision, open an ADR using [`templates/decision-template.md`](templates/decision-template.md). Trivial choices get a one-line note in the relevant doc or project `DECISIONS.md`; consequential external actions get an **approval record**, not an ADR (see [`docs/SECURITY.md`](docs/SECURITY.md)).
+4. For a new project, **use the tool** (preferred): `python -m omar_os new-project <name>`
+   scaffolds from [`projects/_template/`](projects/_template/) and writes `project.json` +
+   `state.json`. (You may also copy the template manually and add the two JSON files.)
+5. After changes, run `python -m omar_os validate` to check links, classification boundary,
+   scaffold structure, and manifest/state schema.
+6. For any **important or hard-to-reverse** decision, open an ADR using [`templates/decision-template.md`](templates/decision-template.md). Trivial choices get a one-line note in the relevant doc or project `DECISIONS.md`; consequential external actions get an **approval record**, not an ADR (see [`docs/SECURITY.md`](docs/SECURITY.md)).
 
 ## Roadmap summary
 
 | Phase | Theme | Headline items |
 |-------|-------|----------------|
-| **v0.1** | FOUNDATION | constitution, architecture, knowledge model, workflows, agent roles, ADRs, templates *(this release)* |
-| **v0.2** | CORE | structured project manifest, local project-creation tool, workflow/state representation, validation |
+| **v0.1** | FOUNDATION | constitution, architecture, knowledge model, workflows, agent roles, ADRs, templates ✅ |
+| **v0.2** | CORE | **Project Core** ✅ — `omar_os` package: `project.json`/`state.json`, `new-project` / `validate` / `stage` CLI, four-check validator, `pytest` suite (ADR-0003) |
 | **v0.3** | CORE | agent interface, orchestrator, planner/executor separation |
 | **v0.4** | INTEGRATION | GitHub adapter, local execution adapter, Codex workflow |
 | **v0.5** | KNOWLEDGE | structured knowledge storage, lesson promotion, context assembly |
@@ -173,10 +184,11 @@ Full plan and rationale: ➡️ **[`ROADMAP.md`](ROADMAP.md)**.
 
 ## Status & honesty note
 
-This is an **early foundation stage**. The documents describe how the system *should* work;
-they are the spec. Implemented software is intentionally minimal — see `ROADMAP.md` for what
-comes next. Do not treat any role, agent, or capability described here as running code
-unless a later phase's commit says otherwise.
+OMAR OS is in **active, phased development**. Foundation v0.1 (documentation) and CORE
+v0.2 (the `omar_os` Project Core package) are implemented and tested. Roles/agents, the
+GitHub adapter, knowledge services, and automation (v0.3+) remain **specifications** until
+their phases land. Do not treat any role, agent, or capability described here as running
+code unless its phase's commit says otherwise — see `ROADMAP.md`.
 
 ---
 

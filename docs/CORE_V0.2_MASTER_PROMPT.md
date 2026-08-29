@@ -58,9 +58,11 @@ tests/
 └── test_schema.py
 ```
 
-- **No external deps unless justified.** Prefer stdlib; if a schema lib is used, it must be
-  installable offline (e.g. `pydantic` is acceptable; a cloud SDK is not). Keep `requirements.txt`
-  minimal. If `pytest` is the only test dep, that is fine.
+- **Zero runtime dependencies.** Use only the Python standard library at runtime:
+  `json`, `datetime`, `pathlib`, `argparse`, `re`. **Do not** introduce `jsonschema` or
+  `pydantic` as runtime dependencies — schema validation in v0.2 is performed with a small
+  stdlib check (required keys present, enums in allowed sets, types correct). `pytest` is the
+  only acceptable *test* dependency. Keep `requirements.txt` minimal or empty.
 - **Offline + Windows paths**: all file ops use `pathlib.Path`; tests must pass on Windows
   with no network.
 
@@ -77,7 +79,7 @@ tests/
   "classification": "public",
   "source_of_truth": ["PROJECT.md", "REQUIREMENTS.md"],
   "success_criteria": ["criterion 1", "criterion 2"],
-  "created_at": "2026-08-29"
+  "created_at": "2026-08-29T10:00:00Z"
 }
 ```
 - `classification` MUST be `public` for anything committed to this public repo
@@ -94,10 +96,13 @@ tests/
   "status": "in_progress",
   "blockers": [],
   "history": [
-    {"stage": "idea", "at": "2026-08-29T10:00:00", "by": "Omar"}
+    {"stage": "idea", "at": "2026-08-29T10:00:00Z", "by": "Omar"}
   ]
 }
 ```
+- **Timestamps are RFC3339 UTC** (suffix `Z`), e.g. `2026-08-29T10:00:00Z`. Generate them
+  with `datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")` (stdlib). No local-time or
+  naive datetimes.
 - `current_stage` ∈ the lifecycle stages from
   [`workflows/project_lifecycle.md`](../workflows/project_lifecycle.md)
   (idea, intake, problem_definition, decomposition, research, flow, logic_review,
@@ -116,18 +121,36 @@ tests/
   changes; protect existing work).
 - **Refuses** if `--classification` is not `public` for the public repo, with a clear message
   about the private workspace.
+- **Path-safety (explicit, all must hold or the command refuses):**
+  - `<name>` must be a **single path segment** — no slashes (`/` or `\`), no `..`, no `.`,
+    no absolute path, no leading/trailing separators.
+  - `<name>` must match **kebab-case**: `^[a-z0-9]+(-[a-z0-9]+)*$` (lowercase letters,
+    digits, single hyphens, no consecutive hyphens, no leading/trailing hyphen).
+  - The final destination `projects/<name>/` must resolve to a path **strictly inside**
+    `projects/` after normalization (reject anything that escapes, e.g. `../`, absolute
+    paths). Compute `os.path.normpath` and assert the result is under `projects/`.
 - Prints the created path.
 
 ### `python -m omar_os validate [path]`
 Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise report.
 
 ### `python -m omar_os stage <project> <stage>`
-- Validates the target `<stage>` is a legal lifecycle stage.
-- Appends to `state.json` history and sets `current_stage`.
-- **Enforces** the principle-J gate: you cannot `stage complete` unless
-  `current_stage` has passed `review` (review-vs-objective) at least once for `high`/`medium`
-  effort. For `low` effort, `review` is still required before `complete` (per
-  `project_lifecycle.md` effort-scaling fix).
+- Validates `<stage>` is a **legal lifecycle stage** (the closed set from
+  [`workflows/project_lifecycle.md`](../workflows/project_lifecycle.md): idea, intake,
+  problem_definition, decomposition, research, flow, logic_review, alternatives, decision,
+  plan, execution, testing, review, fix, document, lessons, knowledge, complete).
+- Appends a history entry and sets `current_stage = <stage>`.
+- **Status mapping:** the project's `status` field follows this simple rule —
+  - created via `new-project` → `todo`;
+  - any `stage` call to a **non-`complete`** stage → `in_progress`;
+  - `stage complete` (when allowed) → `done`.
+- **Enforces the principle-J review gate:** `stage complete` is **rejected** unless the
+  project's `history` already contains a `review` entry (review-vs-objective occurred at
+  least once). This applies to **all effort levels** — low/medium/high must all pass review
+  before `complete` (per `project_lifecycle.md` effort-scaling fix: no "done" without review).
+- **No complex workflow engine.** v0.2 permits transition to any known stage in any order
+  except the `complete` gate above. A full transition graph / legal-edge matrix is **deferred
+  to v0.3** — do not build it now.
 
 ## 7. Lifecycle enforcement rules (from the foundation)
 - Low-impact work may compress *analysis* stages but **must still pass `review`** before
@@ -141,11 +164,19 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
 1. **Links**: every Markdown file's internal links (a label in square brackets followed by a
    destination in parentheses) resolve to an existing relative file and, if present, a valid
    `#anchor`. Reuse the approach from the foundation review. Broken link → fail.
-2. **Classification boundary**: scan `projects/` (excluding `_template`), `knowledge/`,
-   `docs/`, `agents/`, `workflows/`, `templates/`, `decisions/` for any artifact whose
-   declared `classification` is non-`public` while living in the public repo. Also accept a
-   declared classification in `project.json` / front-matter; missing classification on a
-   project manifest → fail. (Enforces ADR-0002.)
+2. **Classification boundary** (enforces ADR-0002):
+   - **Real project manifests are mandatory**: every `projects/<name>/project.json` MUST
+     declare `classification` explicitly (no default/implicit value).
+   - **Inside the public repo, `classification` must be `public`.** Any declaration of
+     `internal` / `confidential` / `restricted` (or missing `classification`) on an artifact
+     living in the public repo is a **validation failure**.
+   - The foundation docs themselves are treated as **implicitly `public`** unless a file
+     explicitly declares otherwise; validators must not require a `classification` field on
+     existing foundation Markdown (only on real `projects/<name>/project.json` manifests and
+     on any artifact that chooses to declare one).
+   - Scan surface: `projects/` (excluding `_template`), `knowledge/`, `docs/`, `agents/`,
+     `workflows/`, `templates/`, `decisions/`. A declared non-`public` classification inside
+     the public repo → fail.
 3. **Scaffold structure**: `projects/_template/` contains exactly
    `PROJECT.md, REQUIREMENTS.md, FLOW.md, DECISIONS.md, TASKS.md, REVIEW.md`; each real
    project under `projects/<name>/` contains the same set (single-source rule). Missing file
@@ -157,8 +188,12 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
 ## 9. Acceptance criteria (all must be true for "done")
 
 - [ ] `python -m omar_os new-project demo --effort low` creates `projects/demo/` with all 6
-      scaffold files + valid `project.json` + `state.json`; exits 0.
-- [ ] `new-project` refuses an existing name (exit non-zero, clear message).
+      scaffold files + valid `project.json` (classification `public`) + `state.json`
+      (current_stage `idea`, status `todo`); exits 0.
+- [ ] `new-project` **refuses an existing name** (exit non-zero, clear message).
+- [ ] `new-project` **path-safety**: refuses `../x`, absolute paths, names with slashes or
+      `.`/`..`, and any non-kebab-case id (e.g. `Bad Name`, `a--b`, `-x`); and refuses any
+      name whose normalized destination escapes `projects/`.
 - [ ] `new-project demo --classification confidential` is **refused** in the public repo
       (exit non-zero, points to private workspace).
 - [ ] `python -m omar_os validate` passes on the repo after scaffolding `demo` (0 broken
@@ -166,26 +201,38 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
 - [ ] `validate` **fails** when a `project.json` has `classification: confidential` inside
       the public repo (proves the boundary check works).
 - [ ] `validate` **fails** when a scaffold file is deleted from a project.
-- [ ] `stage demo complete` is **rejected** until `demo` has reached `review` (principle J).
-- [ ] `stage demo review` then `stage demo complete` succeeds (history appended both times).
+- [ ] `validate` **fails** when a `projects/<name>/project.json` has **no `classification`**
+      field (mandatory on real manifests).
+- [ ] `stage demo complete` is **rejected** until `demo` history contains a `review` entry
+      (principle J; applies to all effort levels).
+- [ ] `stage demo review` then `stage demo complete` succeeds; status transitions
+      `todo` → `in_progress` (at first non-complete stage) → `done` (at complete); history
+      appended each time.
 - [ ] `pytest` runs offline on Windows and **all tests pass**; coverage includes the four
-      validator checks + new-project refusal paths + stage gate.
-- [ ] No network/cloud calls; no provider SDKs; `requirements.txt` minimal.
+      validator checks + new-project refusal/security paths + stage gate + RFC3339 timestamps.
+- [ ] **Zero runtime dependencies** — only Python stdlib (`json`, `datetime`, `pathlib`,
+      `argparse`, `re`); no `jsonschema`/`pydantic` at runtime. `pytest` is the only test dep.
 - [ ] `tests/README.md` placeholder is replaced by the real suite; old "no tests run" wording
       removed.
+- [ ] The implementation PR **updates `README.md`** so it no longer claims "no executable
+      software" — documents `omar_os` package, the three commands, and CORE v0.2 status.
 
 ## 10. Tests (the first real suite)
 
 Write `tests/` with `pytest`. Minimum cases (each a real assertion, not a stub):
 
-- `test_new_project.py`: creates a project; asserts 6 files + valid JSON; refuses existing
-  name; refuses non-`public` classification in public repo.
+- `test_new_project.py`: creates a project; asserts 6 files + valid JSON (classification
+  `public`, status `todo`); refuses existing name; refuses non-`public` classification in
+  public repo; **refuses path-unsafe names** (`../x`, absolute, slashes, `.`/`..`, and
+  non-kebab-case ids) and any name whose destination escapes `projects/`.
 - `test_validate.py`: passes on a clean scaffolded project; fails on broken link injection,
   on a `confidential` project in public repo, on a missing scaffold file, on invalid
-  `current_stage`.
-- `test_state.py`: `stage` appends history; `complete` blocked before `review`; allowed
-  after `review`.
-- `test_schema.py`: malformed `project.json`/`state.json` are rejected by the schema loader.
+  `current_stage`, and on a real manifest **missing `classification`**.
+- `test_state.py`: `stage` appends history and sets `current_stage`; status transitions
+  `todo` → `in_progress` (first non-complete stage) → `done` (complete); `complete` blocked
+  before a `review` entry exists; allowed after `review`; timestamps are RFC3339 UTC.
+- `test_schema.py`: malformed `project.json`/`state.json` are rejected by the stdlib schema
+  check (missing required keys, bad enum, wrong type).
 
 Add a `conftest.py` that builds a temp copy of `projects/_template/` so tests run offline
 and don't pollute the real `projects/`.
@@ -199,11 +246,16 @@ and don't pollute the real `projects/`.
    - `feat: implement state + stage transitions with review gate`
    - `feat: implement validate (links, classification, scaffold, schema)`
    - `test: add pytest suite for Project Core`
-   - `docs: replace tests/README placeholder; update ROADMAP/CHANGELOG to v0.2`
-3. Do **not** merge to `main` automatically. Push `core/v0.2` and open **PR #5** for review.
+   - `docs: replace tests/README placeholder; update ROADMAP/CHANGELOG/README for CORE v0.2`
+3. Do **not** merge to `main` automatically. Push `core/v0.2` and open a PR (the PR number is
+   assigned by GitHub — **do not hard-code a PR number** in the docs or commits) for review.
 4. The PR must include: the package, tests, and doc updates. CI (if any) runs `pytest` +
    `python -m omar_os validate`.
-5. Keep `AGENTS.md` updated if behavior changes (constitution principle: update docs when
+5. **Update `README.md`** in the same PR: after v0.2 lands, the statement that OMAR OS has
+   "no executable software" is no longer true — document the new `omar_os` package, the three
+   CLI commands, and the CORE v0.2 status. Keep README accurate (constitution principle:
+   update docs when implementation behavior changes).
+6. Keep `AGENTS.md` updated if behavior changes (constitution principle: update docs when
    implementation behavior changes).
 
 ## 12. Definition of "documentation-first preserved"
@@ -217,5 +269,5 @@ workflows remain the single source of truth — the code enforces them.
 ## Execution hand-off
 
 When you (the coding agent) execute this: begin on branch `core/v0.2`, follow §11, and open
-**PR #5**. Do not exceed the IN scope. If you find the schema needs a change, open an ADR
-(ADR-0004) rather than silently altering ADR-0003's intent.
+**a PR** (do not hard-code the number). Do not exceed the IN scope. If you find the schema
+needs a change, open an ADR (ADR-0004) rather than silently altering ADR-0003's intent.

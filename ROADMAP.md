@@ -43,8 +43,10 @@ Out of scope (later phases): orchestrator/agent runtime (v0.3), GitHub adapter (
 knowledge DB (v0.5), dashboard/automation (v0.6+).
 
 **Exit criteria:** `pytest` passes offline on Windows; `validate` enforces the public-repo
-classification boundary; `new-project` refuses overwrite and non-`public` classification in
-the public repo; PR #5 opened for review (not auto-merged).
+classification boundary (real manifests must declare `classification`, and only `public` is
+allowed in the public repo); `new-project` refuses overwrite, path-unsafe names, and
+non-`public` classification in the public repo; a PR is opened for review (not auto-merged —
+**do not hard-code the PR number**). Zero runtime dependencies (stdlib only).
 
 ## CORE — v0.3
 

@@ -1,6 +1,6 @@
 # ADR-0003: CORE v0.2 — "Project Core" vertical slice
 
-- **Status:** Accepted (ratified on merge of PR #4, 2026-08-29)
+- **Status:** Proposed (becomes Accepted when PR #4 is merged)
 - **Date:** 2026-08-29
 - **Deciders:** Omar Hesham Safwat (ratified on approval/merge)
 - **Supersedes / relates:** Refines ADR-0002 (public/private split, Git ≠ GitHub, single

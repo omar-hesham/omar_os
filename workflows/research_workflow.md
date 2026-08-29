@@ -12,7 +12,9 @@ verify-before-assume rule (principle C). Implements the Researcher role
 ## Steps
 
 1. **Define questions** — what must be known to decide or build?
-2. **Search by tier**, preferring higher tiers:
+2. **Search by tier**, preferring higher tiers (this is the *procedural application* of
+   constitution principle E; the canonical order is defined once in the constitution, not
+   re-stated as authority here):
    1. Original / official source
    2. Project source data / documentation
    3. Reputable secondary source

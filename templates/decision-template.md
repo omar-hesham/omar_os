@@ -1,7 +1,7 @@
 <!--
 Decision Template (ADR) — copy into decisions/ADR-XXXX-<slug>.md
 Convention: ADR-0001 is the foundation; number sequentially.
-Canonical fields from PROJECT_CONSTITUTION.md principle F and §12.
+Canonical fields from PROJECT_CONSTITUTION.md principle F (Decision Traceability, §6) and the ADR system.
 -->
 # ADR-XXXX: <title>
 

@@ -4,10 +4,46 @@ All notable changes to this repository are documented here, in reverse chronolog
 Format inspired by Keep a Changelog. For the plan behind these entries, see
 [`ROADMAP.md`](ROADMAP.md). For decision rationale, see [`decisions/`](decisions/).
 
-## [0.1.1] — 2026-08-29 — Foundation review corrections (pre-merge)
+## [0.1.2] — 2026-08-29 — Post-merge consistency (PR #2)
 
-Correction pass resolving the pre-merge review findings. Still **documentation-first**;
-no executable software added.
+Finalizes statuses and closes residual contradictions flagged after PR #1 merged.
+
+### Changed
+- **Statuses finalized**: `PROJECT_CONSTITUTION.md` → **Adopted**; `ADR-0001` and `ADR-0002`
+  → **Accepted** (ratified on merge of PR #1).
+- **Git ≠ GitHub (remaining spots)**: removed "GitHub is the source of truth" wording from
+  `PROJECT_CONSTITUTION.md` §7, `README.md` (high-level architecture), and `docs/ARCHITECTURE.md`
+  (diagram node + "Source of Truth" line). Unified phrasing: *version-controlled repository;
+  GitHub = current replaceable hosting adapter*.
+- **Classification taxonomy unified** (`docs/SOURCE_OF_TRUTH.md`, `docs/SECURITY.md`,
+  `decisions/ADR-0002`, `projects/_template/PROJECT.md`): four classes only —
+  `public | internal | confidential | restricted`. `credentials` (API keys/passwords/tokens)
+  are a *type* of **restricted** data → secrets manager, **not** a fifth class. Only `public`
+  is allowed in the public repo; `internal`/`confidential`/`restricted` live in the private
+  workspace / secure store.
+- **Workflow contradictions fixed** (`workflows/project_lifecycle.md`):
+  - Decision stage: important/hard-to-reverse decisions get an ADR; trivial choices get a
+    one-line `DECISIONS.md` note (not an ADR every time).
+  - Effort scaling: low-impact work may compress analysis but **must still pass stage 13
+    (Review vs objective)** before "done".
+- **Decision routing** (`decisions/README.md`, `workflows/decision_workflow.md`, `README.md`,
+  `PROJECT_CONSTITUTION.md` §6): separated record types — ADRs for important *system-level*
+  decisions; project decisions in `DECISIONS.md`; consequential external actions as
+  **approval records**, not ADRs. Fixed the dangling `§12` reference (now §6) and the
+  malformed ADR index table.
+- **Scaffold ownership clarified**: `templates/README.md` and `projects/_template/PROJECT.md`
+  now state `_template/` is the **single source** and `project-template.md` is only a pointer.
+- Removed "pre-merge" wording from this changelog; reordered entries reverse-chronologically.
+
+### Notes / open items
+- Still **no executable software** (intended for v0.1).
+- LICENSE pending (see ROADMAP).
+- With PR #2, Foundation v0.1 is considered **approved and complete**; CORE v0.2 may begin.
+
+## [0.1.1] — 2026-08-29 — Foundation review corrections
+
+Correction pass resolving the pre-merge review findings (shipped via PR #1, then ratified
+on merge to `main`). Still **documentation-first**; no executable software added.
 
 ### Changed (correctness fixes)
 - **Public/private data boundary** (merge blocker): added mandatory data classification
@@ -21,8 +57,9 @@ no executable software added.
 - **Three-tier knowledge model corrected**: tiers are **Core / Domain / Project**; "Lessons"
   is now an **inbox/promotion queue**, not a tier. Fixed in `docs/ARCHITECTURE.md`,
   `docs/KNOWLEDGE_MODEL.md`, `knowledge/README.md`, `knowledge/lessons/README.md`, ADR-0001.
-- **Constitution status**: `PROJECT_CONSTITUTION.md` and `ADR-0001` are now **Draft/Proposed**
-  (were incorrectly "Adopted/Accepted" before review/merge).
+- **Constitution status**: `PROJECT_CONSTITUTION.md` and `ADR-0001` were set to
+  **Draft/Proposed** during review; they are now **Adopted/Accepted** (ratified on merge of
+  PR #1, 2026-08-29). See 0.1.2.
 - **Evidence hierarchy**: stated once (principle E in the constitution); duplicate listing
   removed.
 - **Verify-before-assume**: "label *every* claim" relaxed to "label *material* claims"
@@ -43,7 +80,7 @@ no executable software added.
 - **LICENSE: not yet added.** Pending decision (see ROADMAP).
 - **File naming**: repo mixes kebab-case and snake_case; a normalization is a future cleanup
   (do not block merge). AGENTS.md naming rule to be reconciled later.
-- Status of constitution/ADRs becomes binding on Omar's approval / merge of `foundation/v0.1`.
+- Constitution and ADRs are **Adopted/Accepted** (ratified on merge of PR #1, 2026-08-29).
 
 ## [0.1.0] — 2026-08-29 — FOUNDATION
 
@@ -75,4 +112,6 @@ specification.
 ## [Unreleased]
 - LICENSE decision (pending).
 - v0.2 Project Core: ADR-0002-driven — `new-project` / `validate` / `stage` CLI, single
-  scaffold source, `project.json` + `state.json`, classification enforcement.
+  scaffold source, `project.json` + `state.json`, classification enforcement, and a
+  repeatable `validate` covering links + classification + scaffold structure +
+  manifest/state (the first executable deliverable of CORE v0.2).

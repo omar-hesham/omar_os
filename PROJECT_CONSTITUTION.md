@@ -1,6 +1,6 @@
 # OMAR OS — Project Constitution
 
-**Status:** Draft (pending Omar's review/approval — see ADR-0001)
+**Status:** Adopted — Foundation v0.1 (ratified on merge of PR #1, 2026-08-29)
 **Date drafted:** 2026-08-29
 **Owner:** Omar Hesham Safwat
 **Amendment process:** Any change to this document requires an Architecture Decision Record (ADR). See [`decisions/ADR-0001-omar-os-foundation.md`](decisions/ADR-0001-omar-os-foundation.md) and the ADR template ([`templates/decision-template.md`](templates/decision-template.md)).
@@ -103,13 +103,21 @@ Every important decision record must capture:
 - **Tradeoffs**
 - **Consequences**
 
-Captured as ADRs in [`decisions/`](decisions/) using [`templates/decision-template.md`](templates/decision-template.md).
+Captured by **record type** (see [`decisions/README.md`](decisions/README.md)):
+
+- **Architecture Decision Records (ADRs)** — for important/hard-to-reverse *system-level*
+  decisions (architecture, tooling, process). Filed in `decisions/` using
+  [`templates/decision-template.md`](templates/decision-template.md).
+- **Project decisions** — project-specific choices, recorded in the project's `DECISIONS.md`.
+- **Approval records** — human sign-off on consequential external actions (principle I),
+  captured where the action is tracked (e.g. project `TASKS.md` gate), not as an ADR.
 
 ## 7. Source of Truth
 
-GitHub (this repository) is the versioned source of truth. Conversation is an interface;
-git is durable memory. Critical project knowledge must eventually be represented as
-version-controlled files. See [`docs/SOURCE_OF_TRUTH.md`](docs/SOURCE_OF_TRUTH.md).
+The **version-controlled repository** is the source of truth; GitHub is the current hosting
+adapter and is replaceable. Conversation is an interface; git is durable memory. Critical
+project knowledge must eventually be represented as version-controlled files. See
+[`docs/SOURCE_OF_TRUTH.md`](docs/SOURCE_OF_TRUTH.md).
 
 ## 8. Model-Agnostic Guarantee
 

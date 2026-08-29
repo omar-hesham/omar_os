@@ -1,8 +1,8 @@
 # ADR-0001: OMAR OS Foundation (v0.1)
 
-- **Status:** Proposed (becomes Accepted when Omar approves / the branch is merged)
+- **Status:** Accepted (ratified on merge of PR #1, 2026-08-29)
 - **Date:** 2026-08-29
-- **Deciders:** Omar Hesham Safwat (recorded; status becomes binding on approval/merge)
+- **Deciders:** Omar Hesham Safwat (ratified on merge of PR #1, 2026-08-29)
 
 ## Context
 

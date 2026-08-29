@@ -1,8 +1,9 @@
 # Project: <project-name>  (TEMPLATE — copy `_template/` to start a real project)
 
-> This is the **starter template**, not a real project. Copy the whole `_template/`
-> folder to `projects/<your-project>/` and fill it in. Generated from
-> [`../../templates/project-template.md`](../../templates/project-template.md).
+> This is the **starter template** and the **single source of truth for project scaffolding**.
+> Copy the whole `_template/` folder to `projects/<your-project>/` and fill it in.
+> `templates/project-template.md` is only a **pointer** to this folder — do not edit the
+> scaffold in two places.
 
 ## 1. Purpose
 Why this project exists and what it will produce.
@@ -10,6 +11,15 @@ Why this project exists and what it will produce.
 ## 2. Source of Truth
 The authoritative artifacts for this project (constitution principle D). For this template,
 it is these files.
+
+## 2b. Classification
+Every project carries an explicit classification — **four classes only**:
+`public | internal | confidential | restricted`
+(see [`../../docs/SOURCE_OF_TRUTH.md`](../../docs/SOURCE_OF_TRUTH.md)).
+- **classification:** one of the four.
+- Only `public` projects may live in this public repo. `internal`/`confidential`/`restricted`
+  projects live in the **private workspace**; keep only pointers/metadata here.
+- Credentials (API keys/passwords/tokens) are `restricted` → secrets manager, never in git.
 
 ## 3. Owner & Authority
 - Owner: Omar

@@ -103,7 +103,14 @@ Every important decision record must capture:
 - **Tradeoffs**
 - **Consequences**
 
-Captured as ADRs in [`decisions/`](decisions/) using [`templates/decision-template.md`](templates/decision-template.md).
+Captured by **record type** (see [`decisions/README.md`](decisions/README.md)):
+
+- **Architecture Decision Records (ADRs)** — for important/hard-to-reverse *system-level*
+  decisions (architecture, tooling, process). Filed in `decisions/` using
+  [`templates/decision-template.md`](templates/decision-template.md).
+- **Project decisions** — project-specific choices, recorded in the project's `DECISIONS.md`.
+- **Approval records** — human sign-off on consequential external actions (principle I),
+  captured where the action is tracked (e.g. project `TASKS.md` gate), not as an ADR.
 
 ## 7. Source of Truth
 

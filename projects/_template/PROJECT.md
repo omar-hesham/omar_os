@@ -13,10 +13,13 @@ The authoritative artifacts for this project (constitution principle D). For thi
 it is these files.
 
 ## 2b. Classification
-Every project carries an explicit classification (see [`../../docs/SOURCE_OF_TRUTH.md`](../../docs/SOURCE_OF_TRUTH.md)):
-- **classification:** public | internal | confidential | restricted  (default for a template copy: `internal` until reviewed)
-- If `confidential`/`restricted`, store sensitive content in the **private workspace** and
-  keep only pointers/metadata here.
+Every project carries an explicit classification — **four classes only**:
+`public | internal | confidential | restricted`
+(see [`../../docs/SOURCE_OF_TRUTH.md`](../../docs/SOURCE_OF_TRUTH.md)).
+- **classification:** one of the four.
+- Only `public` projects may live in this public repo. `internal`/`confidential`/`restricted`
+  projects live in the **private workspace**; keep only pointers/metadata here.
+- Credentials (API keys/passwords/tokens) are `restricted` → secrets manager, never in git.
 
 ## 3. Owner & Authority
 - Owner: Omar

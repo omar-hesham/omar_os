@@ -6,7 +6,7 @@ status: specification (v0.1)
 # Decision Workflow
 
 How OMAR OS makes and records important decisions. Implements constitution principle F
-(decision traceability) and §12 (ADR system).
+(decision traceability) and the ADR system defined in [`../PROJECT_CONSTITUTION.md`](../PROJECT_CONSTITUTION.md) §6.
 
 ## When to use
 

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted (ratified on merge of PR #1, 2026-08-29)
 - **Date:** 2026-08-29
-- **Deciders:** Omar Hesham Safwat (recorded; binding on approval/merge)
+- **Deciders:** Omar Hesham Safwat (ratified on merge of PR #1, 2026-08-29)
 - **Supersedes / relates:** Refines ADR-0001 (foundation). Addresses the pre-merge review
   findings on data boundary, source-of-truth wording, and scaffold duplication.
 
@@ -37,9 +37,11 @@ maintaining duplicate scaffolds?
 2. **Source of truth = version-controlled repository + declared authoritative sources.**
    GitHub is the *current hosting adapter* and is replaceable; the architecture must not
    depend on GitHub. The deferred GitHub adapter (v0.4) is one of several possible hosts.
-3. **Data classification is mandatory.** Every artifact carries a class:
-   `public | internal | confidential | restricted`. Confidential/restricted never enter a
-   public repo. (See [`../docs/SOURCE_OF_TRUTH.md`](../docs/SOURCE_OF_TRUTH.md).)
+3. **Data classification is mandatory — four classes only:** `public | internal |
+   confidential | restricted`. `credentials` (API keys/passwords/tokens) are a *type* of
+   **restricted** data stored in a secrets manager, not a fifth class. Only `public` is
+   allowed in the public repo; `internal`/`confidential`/`restricted` live in the private
+   workspace / secure store. (See [`../docs/SOURCE_OF_TRUTH.md`](../docs/SOURCE_OF_TRUTH.md).)
 4. **Single scaffold source.** `projects/_template/` is the only copy-ready project
    starter. `templates/project-template.md` becomes a pointer to it. `new-project` (v0.2)
    copies `_template/` only.

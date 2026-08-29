@@ -27,24 +27,31 @@ a version-controlled repo:
 ## Data classification (required)
 
 The public `omar-os` repository is the **public core**; a separate **private workspace**
-holds sensitive material. Classification governs *where* an artifact lives. Core repository
-paths default to `public`; anything sensitive is kept out of the public repo.
+holds sensitive material. Classification governs *where* an artifact lives.
+
+**Taxonomy (four classes):** `public | internal | confidential | restricted`.
+
+> **`credentials` is a data *type*, not a fifth class.** Credentials (API keys, passwords,
+> tokens) are classified **`restricted`** and stored in a **secrets manager** — they are
+> never committed to git and are not tracked as a separate classification.
 
 | Class | Examples | Where it lives |
 |-------|----------|---------------|
-| **public** | code, principles, architecture, workflows, templates, ADRs | public core repo (default) |
-| **internal** | working drafts, non-sensitive project notes | public core repo **or** private workspace — must carry an explicit `internal` label; not assumed safe, just non-sensitive |
-| **confidential** | customer information, contracts, academic/thesis material, business data, PII | **private version-controlled workspace** (separate private repo or local directory) |
-| **restricted** | financial records, personal sensitive data | **approved secure / encrypted private store** (e.g. encrypted volume, private repo with restricted access) |
-| **credentials** | API keys, passwords, tokens | **secrets manager only** — never in git |
+| **public** | code, principles, architecture, workflows, templates, ADRs | public core repo (default; the *only* class allowed in the public repo) |
+| **internal** | working drafts, non-sensitive project notes | **private workspace** — explicitly labelled; not for the public repo |
+| **confidential** | customer information, contracts, academic/thesis material, business data, PII | **private version-controlled workspace** |
+| **restricted** | financial records, personal sensitive data, **credentials** (API keys/passwords/tokens) | **approved secure/encrypted store** — credentials specifically go to a **secrets manager** |
 
 > **Rules:**
-> - `public` is the default for anything already in this repo; `internal/confidential/restricted`
->   artifacts must be **explicitly labelled** and placed per the table above.
-> - Confidential and restricted material **must not** be committed to the public repo — store
->   it in the private workspace and reference it by pointer/metadata only.
-> - **Financial records are not credentials** — they go to the secure private store, *not* a
->   secrets manager (only API keys/passwords/tokens go to a secrets manager).
+> - Only **`public`** is allowed in the public core repo. `internal`/`confidential`/`restricted`
+>   must live in the private workspace / secure store.
+> - `internal` is an explicitly-labelled, non-sensitive class — it belongs in the private
+>   workspace, not the public repo (a future `validate` can treat any non-`public` class in
+>   the public repo as a hard error).
+> - Confidential and restricted material is referenced from the public repo by
+>   pointer/metadata only.
+> - **Credentials are `restricted` → secrets manager**; financial/personal records are
+>   `restricted` → secure store. Neither goes in git.
 > - See [`SECURITY.md`](SECURITY.md) and ADR-0002 for enforcement.
 
 ## What should become a file (not just a chat)

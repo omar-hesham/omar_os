@@ -67,19 +67,27 @@ Temporary, project-specific context:
 
 ## Lesson promotion (learn from work)
 
+The **three knowledge tiers are Core / Domain / Project** — *not* a "lessons" tier.
+"Lessons" is an **inbox / promotion queue**, not a tier: lessons are captured in
+[`../knowledge/lessons/`](../knowledge/lessons/) as raw captures and are then *promoted*
+into one of the three tiers by the Knowledge Curator. Nothing should live permanently in
+`lessons/`.
+
 Constitution principle K: reusable lessons should move into knowledge/workflow/templates
 rather than being rediscovered. The **Knowledge Curator** role
 ([`../agents/knowledge_curator.md`](../agents/knowledge_curator.md)) decides placement.
 
 ```mermaid
 flowchart LR
-    P[Project knowledge:<br/>a useful lesson] -->|promote| D[Domain knowledge:<br/>reusable in an area]
+    L[Lessons inbox:<br/>raw captures] -->|promote| P[Project knowledge]
+    P -->|promote| D[Domain knowledge:<br/>reusable in an area]
     D -->|generalize| C[Core knowledge:<br/>always-true principle]
     C -. informs new projects .-> P
 ```
 
 Promotion criteria (guidance, not hard rules):
 
+- **Lessons → Project:** the lesson is specific to one project's context.
 - **Project → Domain:** the lesson will likely recur in the same domain.
 - **Domain → Core:** the lesson is true across domains and reflects how Omar works.
 

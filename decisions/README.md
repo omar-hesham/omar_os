@@ -23,4 +23,5 @@ Any **important or hard-to-reverse** decision:
 
 | ADR | Title | Status |
 |-----|-------|--------|
-| [`ADR-0001-omar-os-foundation.md`](ADR-0001-omar-os-foundation.md) | OMAR OS foundation (v0.1) | Accepted |
+| [`ADR-0001-omar-os-foundation.md`](ADR-0001-omar-os-foundation.md) | OMAR OS foundation (v0.1) | Proposed → Accepted on approval/merge |
+| [`ADR-0002-public-private-split.md`](ADR-0002-public-private-split.md) | Public core / private workspace; Git ≠ GitHub; single scaffold source | Proposed |

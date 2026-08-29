@@ -1,8 +1,8 @@
 # ADR-0001: OMAR OS Foundation (v0.1)
 
-- **Status:** Accepted
+- **Status:** Proposed (becomes Accepted when Omar approves / the branch is merged)
 - **Date:** 2026-08-29
-- **Deciders:** Omar Hesham Safwat
+- **Deciders:** Omar Hesham Safwat (recorded; status becomes binding on approval/merge)
 
 ## Context
 
@@ -31,8 +31,10 @@ Establish **OMAR OS v0.1 (FOUNDATION)** as a **documentation-first** repository:
   KNOWLEDGE_MODEL, SOURCE_OF_TRUTH, SECURITY, glossary.
 - Role-based architecture with **10 roles** (added a Security / Risk Reviewer to reconcile
   the role list with the agent specs).
-- A 3-tier knowledge model (core / domain / lessons) kept strictly separate.
-- GitHub as the versioned source of truth ("git is durable memory").
+- A 3-tier knowledge model (Core / Domain / Project) kept strictly separate, with a
+  separate **Lessons inbox** for captured-then-promoted lessons.
+- The **version-controlled repository** as the source of truth ("git is durable memory");
+  GitHub is the current hosting adapter, replaceable (see ADR-0002).
 - An ADR system starting with this record.
 - Reusable master templates + a `_template` starter project.
 - `AGENTS.md` instructing coding agents.

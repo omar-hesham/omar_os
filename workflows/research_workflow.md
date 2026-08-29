@@ -19,7 +19,8 @@ verify-before-assume rule (principle C). Implements the Researcher role
    4. Inference
    5. Assumption
 3. **Evaluate reliability** and cite the authoritative source.
-4. **Label every claim**: *verified fact* / *inference* / *assumption* / *opinion*.
+4. **Label material claims**: *verified fact* / *inference* / *assumption* / *opinion* —
+   at minimum for claims that affect a decision.
 5. **Flag gaps** where verification is not reasonably possible.
 6. **Summarize** with citations and confidence labels.
 7. **Promote** reusables to knowledge (Knowledge Curator).

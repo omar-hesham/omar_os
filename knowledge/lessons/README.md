@@ -1,7 +1,9 @@
 # Lessons — OMAR OS
 
-Captured lessons learned from completed work, awaiting promotion by the Knowledge Curator
-(see [`../../docs/KNOWLEDGE_MODEL.md`](../../docs/KNOWLEDGE_MODEL.md)).
+Captured lessons learned from completed work, **awaiting promotion** by the Knowledge
+Curator (see [`../../docs/KNOWLEDGE_MODEL.md`](../../docs/KNOWLEDGE_MODEL.md)). This folder
+is an **inbox / promotion queue**, *not* a knowledge tier — promoted lessons move into
+Core / Domain / Project and should not remain here permanently.
 
 Each lesson note should state:
 - the situation,

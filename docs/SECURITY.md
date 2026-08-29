@@ -14,6 +14,20 @@
 - The repository contains **no** cloud infrastructure or provider SDKs in v0.1, so there is
   nothing secret to store yet. This policy applies as integrations are added.
 
+## 1b. Data classification & the public/private boundary
+
+The public `omar-os` repository is **not** a safe place for sensitive personal data. Every
+artifact must carry a classification (`public | internal | confidential | restricted`; see
+[`SOURCE_OF_TRUTH.md`](SOURCE_OF_TRUTH.md)). Rules:
+
+- **confidential** (customer information, contracts, academic/thesis submissions, business
+  data, PII) and **restricted** (secrets, financial data) **must not** be committed to the
+  public repo.
+- Confidential/restricted material lives in a **private workspace** (separate private repo or
+  local directory) and is referenced from the public repo by pointer/metadata only.
+- This split is formalized in
+  [`../decisions/ADR-0002-public-private-split.md`](../decisions/ADR-0002-public-private-split.md).
+
 ## 2. Human authority
 
 Omar is the **final authority** for important or consequential decisions (constitution

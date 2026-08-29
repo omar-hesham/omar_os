@@ -11,8 +11,8 @@
 1. **Model-agnostic** — no workflow depends on one AI provider (constitution principle G).
 2. **Layered** — separate *thinking/orchestration* from *execution*.
 3. **Knowledge-tiered** — keep long-lived core knowledge free of short-lived project detail.
-4. **Durable** — GitHub is the versioned source of truth (see
-   [`SOURCE_OF_TRUTH.md`](SOURCE_OF_TRUTH.md)).
+4. **Durable** — the version-controlled repository is the source of truth; GitHub is the
+   current hosting adapter (replaceable). See [`SOURCE_OF_TRUTH.md`](SOURCE_OF_TRUTH.md).
 5. **Replaceable adapters** — integrations plug in without rewriting the core.
 6. **Simple** — the least complex design that meets the requirement (principle L).
 
@@ -23,7 +23,7 @@ flowchart TB
     H[Omar<br/>human authority + approval gates]
     T[Thinking / Orchestration layer<br/>model-agnostic roles]
     E[Execution layer<br/>interchangeable adapters]
-    K[Knowledge layer<br/>core / domain / lessons]
+    K[Knowledge layer<br/>core / domain / project]
     S[Source of Truth<br/>GitHub repository]
 
     H --> T
@@ -58,7 +58,7 @@ are stable even as models change. The full role specifications are in
 | 6 | **Tester / QA** | Tests implementation independently from the coder where practical. |
 | 7 | **Reviewer** | Checks whether the implementation solves the original problem. |
 | 8 | **Documentation Agent** | Maintains documentation and records important changes. |
-| 9 | **Knowledge Curator** | Decides what lessons belong in core / domain / project knowledge. |
+| 9 | **Knowledge Curator** | Decides what lessons belong in core / domain / project knowledge; manages the lessons inbox. |
 | 10 | **Security / Risk Reviewer** | Looks for security, privacy, reliability, or operational risks. |
 
 ```mermaid
@@ -91,10 +91,11 @@ Three tiers, kept strictly separate (detail in [`KNOWLEDGE_MODEL.md`](KNOWLEDGE_
 
 ## Source of truth
 
-GitHub (this repo) is the versioned source of truth. Conversation is an interface; git is
-durable memory. Critical knowledge becomes version-controlled files — principles,
-architecture, workflows, agent definitions, decision records, templates, project
-definitions, lessons learned. See [`SOURCE_OF_TRUTH.md`](SOURCE_OF_TRUTH.md).
+The **version-controlled repository** is the source of truth; GitHub is the *current
+hosting adapter* and is replaceable (see [`SOURCE_OF_TRUTH.md`](SOURCE_OF_TRUTH.md)).
+Conversation is an interface; git is durable memory. Critical knowledge becomes
+version-controlled files — principles, architecture, workflows, agent definitions, decision
+records, templates, project definitions, lessons learned.
 
 ## Model-agnostic adapters
 

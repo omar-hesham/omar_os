@@ -70,9 +70,11 @@ services are interchangeable.
 │  Execution (interchangeable adapters)        │  local Codex, GitHub, browsers,
 │   - coding, testing, git, automation         │         MCP tools, cloud services
 ├─────────────────────────────────────────────┤
-│  Knowledge (3 tiers, version-controlled)      │  core / domain / lessons
+│  Knowledge (3 tiers, version-controlled)      │  core / domain / project
+│   + a Lessons inbox (promotion queue)         │
 ├─────────────────────────────────────────────┤
-│  Source of Truth: GitHub (git = memory)      │  docs, decisions, projects, config
+│  Source of Truth: version-controlled repo    │  docs, decisions, projects, config
+│   (GitHub = current hosting adapter)          │  git = durable memory
 └─────────────────────────────────────────────┘
 ```
 
@@ -127,8 +129,8 @@ omar_os/
 │   ├── project_lifecycle.md  decision_workflow.md
 │   ├── research_workflow.md  software_delivery.md
 │
-├── knowledge/                     # three-tier knowledge store
-│   ├── core/  domains/  lessons/
+├── knowledge/                     # three-tier store (core / domain / project)
+│   ├── core/  domains/  lessons/   # lessons/ = promotion inbox, not a tier
 │
 ├── projects/                      # per-project workspaces
 │   └── _template/                 # starter project (PROJECT/REQUIREMENTS/FLOW/

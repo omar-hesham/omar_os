@@ -45,11 +45,10 @@ flowchart TD
     I --> J[IMPLEMENTATION PLAN]
     J --> K[EXECUTION]
     K --> L[TESTING]
-    L --> M[REVIEW vs ORIGINAL OBJECTIVE]
-    M -->|discrepancy| K
-    M --> N[FIX / ITERATE]
-    N --> M
-    M -->|ok| O[DOCUMENT]
+    L --> M{REVIEW vs OBJECTIVE}
+    M -->|discrepancy| N[FIX / ITERATE]
+    N --> K
+    M -->|pass| O[DOCUMENT]
     O --> P[LESSONS LEARNED]
     P --> Q[KNOWLEDGE UPDATE]
     Q --> R[COMPLETE]
@@ -57,8 +56,8 @@ flowchart TD
     H -. feedback .-> D
 ```
 
-Feedback loops are intentional: logic review can send you back to problem definition; the
-review step can send you back to execution.
+Feedback loops are intentional: logic review can send you back to problem definition;
+the review step sends you back to execution via Fix/Iterate until the objective is met.
 
 ## 3. Effort scaling (applied)
 
@@ -67,11 +66,13 @@ canonical rule in the constitution; applied here:
 
 | Impact | Workflow depth |
 |--------|----------------|
-| **Low** | Steps 1–2 → decide → validate (steps 11–13 light). |
+| **Low** | Steps 1–2 → decide → **validate (steps 11–13 light, but review-vs-objective is always required)**. |
 | **Medium** | Steps 1–9 → execute → review (steps 10–13). |
 | **High / expensive / hard to reverse** | Full steps 1–15, including an ADR (see `decisions/`), risk analysis, and a postmortem. |
 
-**Do not over-engineer trivial tasks.**
+**No work is "done" without a review against the original objective (step 13).** The depth
+scaling changes *how much* analysis precedes execution — not whether the outcome is
+reviewed. This enforces constitution principle J (review after execution).
 
 ## 4. Gate points
 

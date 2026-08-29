@@ -1,7 +1,7 @@
 # OMAR OS — Project Constitution
 
-**Status:** Adopted — Foundation v0.1
-**Date adopted:** 2026-08-29
+**Status:** Draft (pending Omar's review/approval — see ADR-0001)
+**Date drafted:** 2026-08-29
 **Owner:** Omar Hesham Safwat
 **Amendment process:** Any change to this document requires an Architecture Decision Record (ADR). See [`decisions/ADR-0001-omar-os-foundation.md`](decisions/ADR-0001-omar-os-foundation.md) and the ADR template ([`templates/decision-template.md`](templates/decision-template.md)).
 
@@ -45,7 +45,7 @@ operating rules; other documents reference them rather than re-stating them.
 |---|-----------|------|
 | **A** | **Analyze before execution** | Do not begin implementing a significant task until the problem is understood. |
 | **B** | **Flow before complex implementation** | For complex work, create a logical flow or architecture before coding. |
-| **C** | **Verify before assume** | Verify what can reasonably be verified. Label every claim as *verified fact*, *inference*, *assumption*, or *opinion/recommendation*. |
+| **C** | **Verify before assume** | Verify what can reasonably be verified. Label **material claims** (those that affect a decision) as *verified fact*, *inference*, *assumption*, or *opinion/recommendation*. |
 | **D** | **Source of truth** | Every project must define its authoritative source(s). |
 | **E** | **Evidence hierarchy** | Prefer, in order: (1) original/official source, (2) project source data/docs, (3) reputable secondary source, (4) inference, (5) assumption. |
 | **F** | **Decision traceability** | Important decisions must record decision, date, context, alternatives, reason, tradeoffs, and consequences. |
@@ -87,11 +87,9 @@ single canonical definition; [`docs/WORKFLOW.md`](docs/WORKFLOW.md) shows how it
 
 ## 5. Evidence Hierarchy (canonical order)
 
-1. Original / official source
-2. Project source data / documentation
-3. Reputable secondary source
-4. Inference
-5. Assumption
+The canonical order is defined once, in principle E of §3 above. It is not re-listed here
+to avoid duplication. To apply it, see
+[`docs/SOURCE_OF_TRUTH.md`](docs/SOURCE_OF_TRUTH.md).
 
 ## 6. Decision Traceability (required fields for important decisions)
 

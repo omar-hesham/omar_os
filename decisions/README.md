@@ -31,3 +31,4 @@ ADRs record **important or hard-to-reverse *system-level* decisions** only:
 |-----|-------|--------|
 | [`ADR-0001-omar-os-foundation.md`](ADR-0001-omar-os-foundation.md) | OMAR OS foundation (v0.1) | Accepted (ratified 2026-08-29) |
 | [`ADR-0002-public-private-split.md`](ADR-0002-public-private-split.md) | Public core / private workspace; Git ≠ GitHub; single scaffold source | Accepted (ratified 2026-08-29) |
+| [`ADR-0003-core-v0.2-project-core.md`](ADR-0003-core-v0.2-project-core.md) | CORE v0.2 "Project Core" vertical slice (manifest, CLI, validator, tests) | Accepted (ratified 2026-08-29) |

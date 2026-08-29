@@ -26,15 +26,25 @@
 **Exit criteria:** a new engineer or AI agent can understand the system and where each
 concept lives.
 
-## CORE — v0.2
+## CORE — v0.2 ("Project Core" vertical slice)
 
-- [ ] Structured **project manifest** (machine-readable project metadata)
-- [ ] **Local project-creation tool** (scaffold from `projects/_template/`)
-- [ ] **Workflow / state representation** (track lifecycle stage per project)
-- [ ] **Validation** (manifest schema, link checks, structure checks)
-- [ ] First real tests in `tests/`
+Scoped and ratified in **ADR-0003**; full brief in
+[`docs/CORE_V0.2_MASTER_PROMPT.md`](docs/CORE_V0.2_MASTER_PROMPT.md).
 
-**Intent:** make the documentation *operable* locally without external services.
+- [ ] `omar_os/` Python package (runnable: `python -m omar_os <cmd>`)
+- [ ] Machine-readable **project manifest** (`project.json`) + **state** (`state.json`)
+- [ ] **`new-project`** — scaffolds from the single source `projects/_template/`
+- [ ] **`stage`** — lifecycle transitions with the review gate (principle J)
+- [ ] **`validate`** — links + classification boundary + scaffold structure + schema
+- [ ] First real **automated tests** (`pytest`) — replaces the `tests/` placeholder
+
+**In scope only:** local, offline, no cloud, no provider SDKs, no agent runtime.
+Out of scope (later phases): orchestrator/agent runtime (v0.3), GitHub adapter (v0.4),
+knowledge DB (v0.5), dashboard/automation (v0.6+).
+
+**Exit criteria:** `pytest` passes offline on Windows; `validate` enforces the public-repo
+classification boundary; `new-project` refuses overwrite and non-`public` classification in
+the public repo; PR #5 opened for review (not auto-merged).
 
 ## CORE — v0.3
 

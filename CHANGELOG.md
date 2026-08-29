@@ -4,6 +4,29 @@ All notable changes to this repository are documented here, in reverse chronolog
 Format inspired by Keep a Changelog. For the plan behind these entries, see
 [`ROADMAP.md`](ROADMAP.md). For decision rationale, see [`decisions/`](decisions/).
 
+## [0.2.0] — 2026-08-29 — CORE v0.2 plan & Master Implementation Prompt (PR #4)
+
+Foundation v0.1 is **approved and complete** (PR #1–#3 merged). This entry plans — but
+does **not** implement — CORE v0.2.
+
+### Added (planning artifacts)
+- `decisions/ADR-0003-core-v0.2-project-core.md` — ratifies the v0.2 scope: a minimal
+  "Project Core" vertical slice (manifest + state + 3-command CLI + validator + tests).
+- `docs/CORE_V0.2_MASTER_PROMPT.md` — the Master Implementation Prompt for CORE v0.2: exact
+  scope (IN/OUT), schemas, CLI commands, four validator checks, acceptance criteria, real
+  `pytest` suite, and git workflow. Written for a coding agent (Codex et al.) to execute
+  without re-deciding architecture.
+- ROADMAP v0.2 section updated to the concrete slice with in/out scope and exit criteria.
+
+### Intent
+Turn the foundation from a doc set into an operable, verifiable core — local-first, offline,
+no cloud, no provider SDKs — while preserving documentation-first. Execution is a later step
+(branch `core/v0.2`, PR #5), not part of this PR.
+
+### Notes / open items
+- LICENSE still pending (see ROADMAP).
+- The `tests/` placeholder remains until v0.2 implementation replaces it with the real suite.
+
 ## [0.1.2] — 2026-08-29 — Post-merge consistency (PR #2)
 
 Finalizes statuses and closes residual contradictions flagged after PR #1 merged.

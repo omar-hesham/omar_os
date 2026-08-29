@@ -43,7 +43,7 @@ the foundation's own rules — with real automated tests.
 omar_os/
 ├── __init__.py
 ├── __main__.py            # CLI entry: dispatches new-project / validate / stage
-├── schema.py             # manifest + state schemas (pydantic OR stdlib dataclasses+jsonschema)
+├── schema.py             # manifest + state schemas (stdlib dataclasses + inline validation)
 ├── scaffold.py           # copies projects/_template/ -> projects/<name>/
 ├── state.py              # read/write state.json; stage transitions + history
 ├── validate.py           # the four checks (links, classification, scaffold, schema)
@@ -116,7 +116,8 @@ tests/
 ### `python -m omar_os new-project <name> [--effort low|medium|high] [--classification public]`
 - Copies `projects/_template/` → `projects/<name>/`.
 - Writes `project.json` (id=`<name>`, effort_level, classification; default `public`).
-- Writes `state.json` (current_stage=`idea`, status=`todo`, empty history with one seed entry).
+- Writes `state.json` (current_stage=`idea`, status=`todo`, `history` seeded with one entry
+  `{stage: idea, at: <RFC3339 UTC>, by: <owner>}`).
 - **Refuses** if `<name>` already exists (no silent overwrite — principle: small reversible
   changes; protect existing work).
 - **Refuses** if `--classification` is not `public` for the public repo, with a clear message
@@ -135,6 +136,9 @@ tests/
 Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise report.
 
 ### `python -m omar_os stage <project> <stage>`
+- **Path-safety on `<project>`** (same rules as `new-project`): `<project>` must be a single
+  kebab-case path segment (no slashes, `.`, `..`, absolute paths); its resolved location must
+  stay strictly inside `projects/`. Anything else is refused before any file is written.
 - Validates `<stage>` is a **legal lifecycle stage** (the closed set from
   [`workflows/project_lifecycle.md`](../workflows/project_lifecycle.md): idea, intake,
   problem_definition, decomposition, research, flow, logic_review, alternatives, decision,
@@ -155,9 +159,11 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
 ## 7. Lifecycle enforcement rules (from the foundation)
 - Low-impact work may compress *analysis* stages but **must still pass `review`** before
   `complete` (no "done" without review).
-- Decision stage: only `high`-effort (and architecturally important `medium`) projects
-  require an ADR; `low` gets a one-line `DECISIONS.md` note. `stage` does not create ADRs; it
-  only records transitions.
+- **ADR routing is by decision type, not project size** (constitution §6 + `decisions/README.md`):
+  ADRs record important/hard-to-reverse **system-level** decisions. Whether a project is
+  `low`/`medium`/`high` effort does **not** change that rule. Within a project, `DECISIONS.md`
+  records project-specific choices (a one-line note for trivial choices, a fuller entry for
+  consequential ones). `stage` does not create ADRs; it only records stage transitions.
 
 ## 8. Validator (`validate`) — the four checks
 
@@ -177,19 +183,22 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
    - Scan surface: `projects/` (excluding `_template`), `knowledge/`, `docs/`, `agents/`,
      `workflows/`, `templates/`, `decisions/`. A declared non-`public` classification inside
      the public repo → fail.
-3. **Scaffold structure**: `projects/_template/` contains exactly
-   `PROJECT.md, REQUIREMENTS.md, FLOW.md, DECISIONS.md, TASKS.md, REVIEW.md`; each real
-   project under `projects/<name>/` contains the same set (single-source rule). Missing file
-   → fail.
+3. **Scaffold structure** (single-source rule):
+   - `projects/_template/` contains **exactly the 6 markdown files**:
+     `PROJECT.md, REQUIREMENTS.md, FLOW.md, DECISIONS.md, TASKS.md, REVIEW.md`.
+   - A **real** project under `projects/<name>/` must contain those **same 6 markdown files
+     PLUS `project.json` and `state.json`** (8 files total). The two JSON manifests are added
+     by `new-project`; they are not part of `_template/`. Missing file → fail.
 4. **Manifest/state schema**: every `project.json` and `state.json` validates against the
    §5 schemas; `current_stage` is a legal stage; `effort_level`/`classification` are legal
    enum values. Invalid → fail.
 
 ## 9. Acceptance criteria (all must be true for "done")
 
-- [ ] `python -m omar_os new-project demo --effort low` creates `projects/demo/` with all 6
-      scaffold files + valid `project.json` (classification `public`) + `state.json`
-      (current_stage `idea`, status `todo`); exits 0.
+- [ ] `python -m omar_os new-project demo --effort low` creates `projects/demo/` containing
+      the 6 template markdown files (`PROJECT.md, REQUIREMENTS.md, FLOW.md, DECISIONS.md,
+      TASKS.md, REVIEW.md`) **plus** `project.json` (classification `public`) and `state.json`
+      (current_stage `idea`, status `todo`, one seeded history entry); exits 0.
 - [ ] `new-project` **refuses an existing name** (exit non-zero, clear message).
 - [ ] `new-project` **path-safety**: refuses `../x`, absolute paths, names with slashes or
       `.`/`..`, and any non-kebab-case id (e.g. `Bad Name`, `a--b`, `-x`); and refuses any
@@ -221,13 +230,15 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
 
 Write `tests/` with `pytest`. Minimum cases (each a real assertion, not a stub):
 
-- `test_new_project.py`: creates a project; asserts 6 files + valid JSON (classification
-  `public`, status `todo`); refuses existing name; refuses non-`public` classification in
+- `test_new_project.py`: creates a project; asserts the 6 template markdown files **plus**
+  `project.json` (classification `public`, status `todo`) and `state.json` exist (8 files
+  total) with valid JSON; refuses existing name; refuses non-`public` classification in
   public repo; **refuses path-unsafe names** (`../x`, absolute, slashes, `.`/`..`, and
   non-kebab-case ids) and any name whose destination escapes `projects/`.
-- `test_validate.py`: passes on a clean scaffolded project; fails on broken link injection,
-  on a `confidential` project in public repo, on a missing scaffold file, on invalid
-  `current_stage`, and on a real manifest **missing `classification`**.
+- `test_validate.py`: passes on a clean scaffolded project (6 md + 2 json); fails on broken
+  link injection, on a `confidential` project in public repo, on a missing scaffold file
+  (any of the 6 md or the 2 json), on invalid `current_stage`, and on a real manifest
+  **missing `classification`**.
 - `test_state.py`: `stage` appends history and sets `current_stage`; status transitions
   `todo` → `in_progress` (first non-complete stage) → `done` (complete); `complete` blocked
   before a `review` entry exists; allowed after `review`; timestamps are RFC3339 UTC.

@@ -134,10 +134,3 @@ specification.
 ### Notes / open items
 - The 10th role (Security / Risk Reviewer) was added to reconcile the role list in
   `docs/ARCHITECTURE.md` with the agent specs; recorded in ADR-0001.
-
-## [Unreleased]
-- LICENSE decision (pending).
-- v0.2 Project Core: ADR-0002-driven — `new-project` / `validate` / `stage` CLI, single
-  scaffold source, `project.json` + `state.json`, classification enforcement, and a
-  repeatable `validate` covering links + classification + scaffold structure +
-  manifest/state (the first executable deliverable of CORE v0.2).

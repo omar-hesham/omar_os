@@ -28,7 +28,7 @@ concept lives.
 
 ## CORE — v0.2 ("Project Core" vertical slice)
 
-Scoped and ratified in **ADR-0003**; full brief in
+Scoped in **ADR-0003** (Proposed; becomes Accepted on PR #4 merge); full brief in
 [`docs/CORE_V0.2_MASTER_PROMPT.md`](docs/CORE_V0.2_MASTER_PROMPT.md).
 
 - [ ] `omar_os/` Python package (runnable: `python -m omar_os <cmd>`)

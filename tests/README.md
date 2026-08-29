@@ -1,23 +1,27 @@
-# Tests — OMAR OS
+# tests/
 
-> **Placeholder (v0.1).** Intentionally minimal.
+The first real automated test suite for OMAR OS (introduced in CORE v0.2).
 
-Reserved for automated tests of OMAR OS software as it is built (CORE v0.2+). In v0.1 the
-system is documentation; there is nothing executable to test yet.
+Run with:
 
-## Current state
+```bash
+pytest
+```
 
-- No test suite exists. Any claim of "tests passing" would be fabricated — none run.
-- The `tests/` directory exists so the structure is ready and so tooling (CI) can be wired
-  later without restructuring.
+## Layout
 
-## When tests arrive
-- Validate the project manifest schema (CORE v0.2).
-- Validate workflow/state representations.
-- Validate templates and ADR numbering.
-- Independent testing is preferred (Tester / QA role,
-  [`../agents/tester.md`](../agents/tester.md)).
+- `conftest.py` — builds a temp copy of `projects/_template/` so tests run offline
+  and never touch the real `projects/` directory.
+- `test_new_project.py` — scaffolding, path-safety, classification refusal.
+- `test_validate.py` — the four validator checks (links, classification,
+  scaffold structure, schema).
+- `test_state.py` — `stage` transitions, status mapping, the principle-J review
+  gate, and path-traversal refusal.
+- `test_schema.py` — manifest/state schema validation.
 
-## See also
-- Roadmap: [`../ROADMAP.md`](../ROADMAP.md) (CORE v0.2, CORE v0.3).
-- Workflow: [`../workflows/software_delivery.md`](../workflows/software_delivery.md).
+## Scope
+
+These tests cover the CORE v0.2 "Project Core" slice only: the `omar_os` package,
+the `new-project` / `validate` / `stage` commands, and the four validator checks.
+Agent runtime, GitHub adapter, and knowledge services are later phases (see
+`ROADMAP.md`) and are **not** exercised here.

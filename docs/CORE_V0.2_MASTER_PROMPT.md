@@ -59,12 +59,13 @@ tests/
 ```
 
 - **Zero runtime dependencies.** Use only the Python standard library at runtime:
-  `json`, `datetime`, `pathlib`, `argparse`, `re`. **Do not** introduce `jsonschema` or
-  `pydantic` as runtime dependencies — schema validation in v0.2 is performed with a small
-  stdlib check (required keys present, enums in allowed sets, types correct). `pytest` is the
-  only acceptable *test* dependency. Keep `requirements.txt` minimal or empty.
-- **Offline + Windows paths**: all file ops use `pathlib.Path`; tests must pass on Windows
-  with no network.
+  `json`, `datetime`, `pathlib`, `argparse`, `re`, `dataclasses`. **Do not** introduce
+  `jsonschema` or `pydantic` as runtime dependencies — schema validation in v0.2 is performed
+  with a small stdlib check (required keys present, enums in allowed sets, types correct).
+  `pytest` is the only acceptable *test* dependency. Keep `requirements.txt` minimal or empty.
+- **Offline + Windows paths**: all file ops use `pathlib.Path` (never `os.path`); tests must
+  pass on Windows with no network. Path containment is checked with
+  `Path.resolve()` + `is_relative_to()` (or a `parents` walk), not `os.path.normpath`.
 
 ## 5. Data schemas
 
@@ -129,7 +130,9 @@ tests/
     digits, single hyphens, no consecutive hyphens, no leading/trailing hyphen).
   - The final destination `projects/<name>/` must resolve to a path **strictly inside**
     `projects/` after normalization (reject anything that escapes, e.g. `../`, absolute
-    paths). Compute `os.path.normpath` and assert the result is under `projects/`.
+    paths). Compute `Path(projects/<name>).resolve()` and assert it is relative to
+    `Path(projects/).resolve()` (use `is_relative_to()` or a `parents` check). Do **not** use
+    `os.path.normpath`.
 - Prints the created path.
 
 ### `python -m omar_os validate [path]`
@@ -188,7 +191,11 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
      `PROJECT.md, REQUIREMENTS.md, FLOW.md, DECISIONS.md, TASKS.md, REVIEW.md`.
    - A **real** project under `projects/<name>/` must contain those **same 6 markdown files
      PLUS `project.json` and `state.json`** (8 files total). The two JSON manifests are added
-     by `new-project`; they are not part of `_template/`. Missing file → fail.
+     by `new-project`; they are not part of `_template/`.
+   - **Additional files are allowed.** A project may contain extra files/dirs (e.g. source
+     code, assets, notes) beyond the 8 required ones; the validator only enforces that the
+     8 required files are **present** — it does not forbid extras. (This keeps projects usable
+     for real work without breaking validation.) Missing any of the 8 required files → fail.
 4. **Manifest/state schema**: every `project.json` and `state.json` validates against the
    §5 schemas; `current_stage` is a legal stage; `effort_level`/`classification` are legal
    enum values. Invalid → fail.
@@ -231,10 +238,11 @@ Runs the four checks (see §8). Exits non-zero on any failure. Prints a concise 
 Write `tests/` with `pytest`. Minimum cases (each a real assertion, not a stub):
 
 - `test_new_project.py`: creates a project; asserts the 6 template markdown files **plus**
-  `project.json` (classification `public`, status `todo`) and `state.json` exist (8 files
-  total) with valid JSON; refuses existing name; refuses non-`public` classification in
-  public repo; **refuses path-unsafe names** (`../x`, absolute, slashes, `.`/`..`, and
-  non-kebab-case ids) and any name whose destination escapes `projects/`.
+  `project.json` (classification `public`) and `state.json` (status `todo`, one seeded
+  history entry) exist (8 files total) with valid JSON; refuses existing name; refuses
+  non-`public` classification in public repo; **refuses path-unsafe names** (`../x`, absolute,
+  slashes, `.`/`..`, and non-kebab-case ids) and any name whose destination escapes
+  `projects/`.
 - `test_validate.py`: passes on a clean scaffolded project (6 md + 2 json); fails on broken
   link injection, on a `confidential` project in public repo, on a missing scaffold file
   (any of the 6 md or the 2 json), on invalid `current_stage`, and on a real manifest
@@ -242,6 +250,8 @@ Write `tests/` with `pytest`. Minimum cases (each a real assertion, not a stub):
 - `test_state.py`: `stage` appends history and sets `current_stage`; status transitions
   `todo` → `in_progress` (first non-complete stage) → `done` (complete); `complete` blocked
   before a `review` entry exists; allowed after `review`; timestamps are RFC3339 UTC.
+  **Also asserts `stage` refuses path traversal** — e.g. `stage ../escape review` and
+  `stage <abs-path> review` are rejected before any write (mirrors new-project path-safety).
 - `test_schema.py`: malformed `project.json`/`state.json` are rejected by the stdlib schema
   check (missing required keys, bad enum, wrong type).
 

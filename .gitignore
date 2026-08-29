@@ -31,6 +31,8 @@ node_modules/
 # Build / output artifacts
 dist/
 build/
+*.egg-info/
+uv.lock
 *.log
 
 # Local-only knowledge/working files (if any tooling writes caches here)

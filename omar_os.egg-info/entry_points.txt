@@ -1,2 +1,0 @@
-[console_scripts]
-omar_os = omar_os.__main__:main

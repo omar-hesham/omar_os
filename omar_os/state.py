@@ -24,7 +24,10 @@ class StateError(Exception):
 
 
 def _state_path(name: str) -> Path:
-    return project_path_for(name) / STATE_FILE
+    try:
+        return project_path_for(name) / STATE_FILE
+    except ValueError as exc:
+        raise StateError(str(exc))
 
 
 def read_state(name: str) -> dict:

@@ -54,12 +54,18 @@ def new_project(
             f"use the private workspace for {classification!r} projects"
         )
 
-    # Copy the 6 markdown templates (single-source rule).
+    # Copy the 6 markdown templates (single-source rule). Every template file
+    # MUST be present; if the single source is incomplete we refuse rather than
+    # silently producing a malformed project.
+    missing = [md for md in SCAFFOLD_MD_FILES if not (TEMPLATE_DIR / md).exists()]
+    if missing:
+        raise ScaffoldError(
+            f"template source incomplete — missing: {', '.join(missing)} "
+            f"(single-source rule requires all 6 scaffold files in {TEMPLATE_DIR})"
+        )
     dest.mkdir(parents=True)
     for md in SCAFFOLD_MD_FILES:
-        src = TEMPLATE_DIR / md
-        if src.exists():
-            shutil.copyfile(src, dest / md)
+        shutil.copyfile(TEMPLATE_DIR / md, dest / md)
 
     # Write the two JSON manifests (not part of the template).
     manifest = schema.build_manifest(

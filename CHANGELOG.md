@@ -30,33 +30,31 @@ The first executable slice of OMAR OS (per ADR-0003, ratified by PR #4).
 - `validate` enforces the public-repo classification boundary and 8-file scaffold presence.
 
 ### Notes
-- This closes the `## Unreleased — CORE v0.2 Planning` entry below.
 - LICENSE still pending (see ROADMAP).
 
-## Unreleased — CORE v0.2 Planning (PR #4)
+## [0.2.1] — 2026-08-29 — Hardening (attack-test fixes)
 
-Foundation v0.1 is **approved and complete** (PR #1–#3 merged). This entry planned — but
-does **not** implement — CORE v0.2 (implementation shipped as `## [0.2.0]` above).
+Follow-up to PR #5 after review. Closed six attack-test blockers and added regression
+tests (suite now 30 tests, all passing offline on Windows):
 
-### Added (planning artifacts)
-- `decisions/ADR-0003-core-v0.2-project-core.md` — **Proposed**; ratifies the v0.2 scope: a
-  minimal "Project Core" vertical slice (manifest + state + 3-command CLI + validator + tests).
-  Becomes Accepted on merge of PR #4.
-- `docs/CORE_V0.2_MASTER_PROMPT.md` — the Master Implementation Prompt for CORE v0.2: exact
-  scope (IN/OUT), schemas, CLI commands, four validator checks, acceptance criteria, real
-  `pytest` suite, and git workflow. Written for a coding agent (Codex et al.) to execute
-  without re-deciding architecture.
-- ROADMAP v0.2 section updated to the concrete slice with in/out scope and exit criteria.
+- Validator now scans **declared** `classification` outside project manifests (docs,
+  agents, workflows, templates, decisions, knowledge) and fails any non-`public`
+  declaration in the public repo (ADR-0002).
+- A project missing `project.json` (or any of the 8 required files) now **fails**
+  instead of silently passing.
+- Malformed JSON in `project.json` / `state.json` produces a structured validation
+  failure (no crash).
+- `state.json` history validation hardened: each entry's `stage` must be a legal stage,
+  `at` a non-empty RFC3339 string, `by` a non-empty string.
+- `stage <project>` with a traversal/unsafe id now raises a clean `StateError` (no
+  traceback).
+- `new-project` refuses when the single-source template is incomplete (missing any of
+  the 6 scaffold files) instead of silently scaffolding a malformed project.
 
-### Intent
-Turn the foundation from a doc set into an operable, verifiable core — local-first, offline,
-no cloud, no provider SDKs — while preserving documentation-first. Execution is a later step
-(branch `core/v0.2`, then its implementation PR), not part of this PR.
+Also fixed the test fixture to actually use the temp template copy it claims to use.
 
-### Notes / open items
-- LICENSE still pending (see ROADMAP).
-- The `tests/` placeholder remains until v0.2 implementation replaces it with the real suite.
-- Do not rename this section to `[0.2.0]` until the implementation ships.
+### Notes
+- No scope change from ADR-0003; all fixes are within the CORE v0.2 vertical slice.
 
 ## [0.1.2] — 2026-08-29 — Post-merge consistency (PR #2)
 

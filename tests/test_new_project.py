@@ -49,3 +49,13 @@ def test_new_project_extra_files_allowed(tmp_repo):
     dest = make_project(tmp_repo, "demo", extra_files=["notes.txt", "src/main.py"])
     assert (dest / "notes.txt").exists()
     assert (dest / "src" / "main.py").exists()
+
+
+# --- Regression: incomplete template must be refused, not silently scaffolded
+def test_new_project_refuses_incomplete_template(tmp_repo):
+    # Remove one of the 6 required template files so the single source is broken.
+    (tmp_repo / "projects" / "_template" / "FLOW.md").unlink()
+    from omar_os.scaffold import ScaffoldError
+
+    with pytest.raises(ScaffoldError):
+        make_project(tmp_repo, "demo")

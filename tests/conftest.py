@@ -69,9 +69,11 @@ def make_project(
 
     orig_projects = C.PROJECTS_DIR
     orig_template = C.TEMPLATE_DIR
+    orig_scaffold_template = scaffold.TEMPLATE_DIR
     orig_pu_projects = PU.PROJECTS_DIR
     C.PROJECTS_DIR = tmp_repo / "projects"
     C.TEMPLATE_DIR = tmp_repo / "projects" / "_template"
+    scaffold.TEMPLATE_DIR = tmp_repo / "projects" / "_template"
     PU.PROJECTS_DIR = tmp_repo / "projects"
     try:
         dest = scaffold.new_project(
@@ -80,6 +82,7 @@ def make_project(
     finally:
         C.PROJECTS_DIR = orig_projects
         C.TEMPLATE_DIR = orig_template
+        scaffold.TEMPLATE_DIR = orig_scaffold_template
         PU.PROJECTS_DIR = orig_pu_projects
 
     if extra_files:

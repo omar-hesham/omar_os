@@ -96,26 +96,47 @@ def validate_state(data: dict) -> None:
     _check_required(data, STATE_REQUIRED, STATE_FILE)
     _check_enum(data["current_stage"], LIFECYCLE_STAGES, "current_stage", STATE_FILE)
     _check_enum(data["status"], STATUSES, "status", STATE_FILE)
-    # history entries must be dicts with stage/at/by
-    for entry in data["history"]:
+    # history entries must be dicts with stage/at/by, each well-typed.
+    for i, entry in enumerate(data["history"]):
         if not isinstance(entry, dict):
-            raise SchemaError(f"{STATE_FILE}.history entries must be objects")
+            raise SchemaError(f"{STATE_FILE}.history[{i}] must be an object")
         for k in ("stage", "at", "by"):
             if k not in entry:
-                raise SchemaError(f"{STATE_FILE}.history entry missing key: {k}")
+                raise SchemaError(f"{STATE_FILE}.history[{i}] missing key: {k}")
+        if not isinstance(entry["stage"], str) or entry["stage"] not in LIFECYCLE_STAGES:
+            raise SchemaError(
+                f"{STATE_FILE}.history[{i}].stage must be a legal stage; "
+                f"got {entry['stage']!r}"
+            )
+        if not isinstance(entry["at"], str) or not entry["at"]:
+            raise SchemaError(
+                f"{STATE_FILE}.history[{i}].at must be a non-empty RFC3339 string; "
+                f"got {entry['at']!r}"
+            )
+        if not isinstance(entry["by"], str) or not entry["by"]:
+            raise SchemaError(
+                f"{STATE_FILE}.history[{i}].by must be a non-empty string; "
+                f"got {entry['by']!r}"
+            )
 
 
 def validate_project_file(path) -> None:
     from pathlib import Path
 
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SchemaError(f"{MANIFEST_FILE}: invalid JSON: {exc}") from exc
     validate_project(data)
 
 
 def validate_state_file(path) -> None:
     from pathlib import Path
 
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SchemaError(f"{STATE_FILE}: invalid JSON: {exc}") from exc
     validate_state(data)
 
 

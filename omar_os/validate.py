@@ -79,52 +79,94 @@ def check_links(root: Path) -> list[str]:
     return problems
 
 
-def check_classification(projects_dir: Path) -> list[str]:
+def check_classification(projects_dir: Path, root: Path | None = None) -> list[str]:
     """Enforce ADR-0002 inside the public repo.
 
-    Real project manifests MUST declare classification, and it MUST be public.
-    Foundation docs are implicitly public (not checked for a classification field).
+    * Real project manifests MUST declare classification, and it MUST be public.
+    * Any *declared* classification on a document inside the public repo that is
+      not `public` is a failure (covers docs/agents/workflows/etc. that choose to
+      declare one). Foundation docs without a declaration are implicitly public.
     """
     problems: list[str] = []
-    # Only real projects (exclude _template) carry a mandatory classification.
-    for proj in projects_dir.iterdir():
-        if not proj.is_dir():
+    scan_root = (root or projects_dir.parent).resolve()
+
+    # 1. Real project manifests (projects/, excluding _template).
+    if projects_dir.is_dir():
+        for proj in projects_dir.iterdir():
+            if not proj.is_dir() or proj.name == "_template":
+                continue
+            manifest = proj / constants.MANIFEST_FILE
+            if not manifest.exists():
+                continue  # handled by check_scaffold/orphan checks
+            try:
+                data = json.loads(manifest.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                problems.append(f"{proj}: unreadable {constants.MANIFEST_FILE}")
+                continue
+            if "classification" not in data:
+                problems.append(
+                    f"{proj}: {constants.MANIFEST_FILE} missing mandatory 'classification'"
+                )
+                continue
+            if data["classification"] != constants.PUBLIC_CLASSIFICATION:
+                problems.append(
+                    f"{proj}: classification {data['classification']!r} not allowed "
+                    f"in public repo (must be {constants.PUBLIC_CLASSIFICATION!r})"
+                )
+
+    # 2. Any declared classification field (top-level) in scanned documents that
+    #    is not `public`. We scan common doc roots but only flag an explicit,
+    #    non-public declaration (implicitly-public docs are ignored).
+    for sub in ("docs", "agents", "workflows", "templates", "decisions", "knowledge"):
+        d = scan_root / sub
+        if not d.is_dir():
             continue
-        if proj.name == "_template":
-            continue
-        manifest = proj / constants.MANIFEST_FILE
-        if not manifest.exists():
-            # Not a project we manage; skip.
-            continue
-        try:
-            data = json.loads(manifest.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            problems.append(f"{proj}: unreadable {constants.MANIFEST_FILE}")
-            continue
-        if "classification" not in data:
-            problems.append(
-                f"{proj}: {constants.MANIFEST_FILE} missing mandatory 'classification'"
-            )
-            continue
-        if data["classification"] != constants.PUBLIC_CLASSIFICATION:
-            problems.append(
-                f"{proj}: classification {data['classification']!r} not allowed "
-                f"in public repo (must be {constants.PUBLIC_CLASSIFICATION!r})"
-            )
+        for f in d.rglob("*.md"):
+            try:
+                text = f.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            decl = _declared_classification(text)
+            if decl is not None and decl != constants.PUBLIC_CLASSIFICATION:
+                problems.append(
+                    f"{f}: declared classification {decl!r} not allowed in public "
+                    f"repo (must be {constants.PUBLIC_CLASSIFICATION!r})"
+                )
     return problems
+
+
+# A simple front-matter / inline declaration parser for `classification:`.
+_CLASS_RE = re.compile(r"^\s*classification\s*:\s*[\"']?([a-zA-Z]+)[\"']?\s*$", re.MULTILINE)
+
+
+def _declared_classification(text: str) -> str | None:
+    """Return a top-level `classification:` value if declared, else None."""
+    m = _CLASS_RE.search(text)
+    if not m:
+        return None
+    val = m.group(1).lower()
+    return val if val in constants.CLASSIFICATIONS else val
 
 
 def check_scaffold(projects_dir: Path) -> list[str]:
     """Each real project must contain the 8 required files.
 
-    Additional files are allowed; missing any required file fails.
+    A directory under ``projects/`` (excluding ``_template``) that contains any
+    project artifact (``state.json`` or any of the 6 scaffold markdown files) but
+    is missing ``project.json`` or any other required file is a failure — missing
+    files must not be silently skipped.
     """
     problems: list[str] = []
+    if not projects_dir.is_dir():
+        return problems
     for proj in projects_dir.iterdir():
         if not proj.is_dir() or proj.name == "_template":
             continue
-        if not (proj / constants.MANIFEST_FILE).exists():
-            continue  # not a managed project
+        has_any_artifact = (proj / constants.STATE_FILE).exists() or any(
+            (proj / md).exists() for md in constants.SCAFFOLD_MD_FILES
+        )
+        if not has_any_artifact:
+            continue  # an unrelated directory; not our concern
         for required in constants.REQUIRED_PROJECT_FILES:
             if not (proj / required).exists():
                 problems.append(f"{proj}: missing required file {required}")
@@ -157,7 +199,7 @@ def run_checks(root: Path | None = None) -> dict[str, list[str]]:
     projects_dir = root / "projects" if root else constants.PROJECTS_DIR
     return {
         "links": check_links(root),
-        "classification": check_classification(projects_dir),
+        "classification": check_classification(projects_dir, root),
         "scaffold": check_scaffold(projects_dir),
         "schema": check_schema(projects_dir),
     }

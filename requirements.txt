@@ -1,0 +1,5 @@
+# Runtime dependencies: NONE (Python standard library only).
+# See docs/CORE_V0.2_MASTER_PROMPT.md §4 — zero runtime dependencies.
+#
+# Test dependency (development only):
+pytest

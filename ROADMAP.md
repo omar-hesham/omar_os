@@ -26,27 +26,26 @@
 **Exit criteria:** a new engineer or AI agent can understand the system and where each
 concept lives.
 
-## CORE — v0.2 ("Project Core" vertical slice)
+## CORE — v0.2 ("Project Core" vertical slice) ✅
 
-Scoped in **ADR-0003** (Proposed; becomes Accepted on PR #4 merge); full brief in
-[`docs/CORE_V0.2_MASTER_PROMPT.md`](docs/CORE_V0.2_MASTER_PROMPT.md).
+Scoped and ratified in **ADR-0003** (Accepted); full brief in
+[`docs/CORE_V0.2_MASTER_PROMPT.md`](docs/CORE_V0.2_MASTER_PROMPT.md). Implemented in PR #5.
 
-- [ ] `omar_os/` Python package (runnable: `python -m omar_os <cmd>`)
-- [ ] Machine-readable **project manifest** (`project.json`) + **state** (`state.json`)
-- [ ] **`new-project`** — scaffolds from the single source `projects/_template/`
-- [ ] **`stage`** — lifecycle transitions with the review gate (principle J)
-- [ ] **`validate`** — links + classification boundary + scaffold structure + schema
-- [ ] First real **automated tests** (`pytest`) — replaces the `tests/` placeholder
+- [x] `omar_os/` Python package (runnable: `python -m omar_os <cmd>`)
+- [x] Machine-readable **project manifest** (`project.json`) + **state** (`state.json`)
+- [x] **`new-project`** — scaffolds from the single source `projects/_template/`
+- [x] **`stage`** — lifecycle transitions with the review gate (principle J)
+- [x] **`validate`** — links + classification boundary + scaffold structure + schema
+- [x] First real **automated tests** (`pytest`) — replaces the `tests/` placeholder
 
 **In scope only:** local, offline, no cloud, no provider SDKs, no agent runtime.
 Out of scope (later phases): orchestrator/agent runtime (v0.3), GitHub adapter (v0.4),
 knowledge DB (v0.5), dashboard/automation (v0.6+).
 
-**Exit criteria:** `pytest` passes offline on Windows; `validate` enforces the public-repo
-classification boundary (real manifests must declare `classification`, and only `public` is
-allowed in the public repo); `new-project` refuses overwrite, path-unsafe names, and
-non-`public` classification in the public repo; a PR is opened for review (not auto-merged —
-**do not hard-code the PR number**). Zero runtime dependencies (stdlib only).
+**Exit criteria (met):** `pytest` passes offline on Windows; `validate` enforces the
+public-repo classification boundary (real manifests must declare `classification`, and only
+`public` is allowed in the public repo); `new-project` refuses overwrite, path-unsafe names,
+and non-`public` classification in the public repo; zero runtime dependencies (stdlib only).
 
 ## CORE — v0.3
 

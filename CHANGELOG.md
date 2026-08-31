@@ -4,31 +4,51 @@ All notable changes to this repository are documented here, in reverse chronolog
 Format inspired by Keep a Changelog. For the plan behind these entries, see
 [`ROADMAP.md`](ROADMAP.md). For decision rationale, see [`decisions/`](decisions/).
 
-## Unreleased — CORE v0.2 Planning (PR #4)
+## [0.2.0] — 2026-08-29 — CORE v0.2 Project Core implemented (PR #5)
 
-Foundation v0.1 is **approved and complete** (PR #1–#3 merged). This entry plans — but
-does **not** implement — CORE v0.2. The real `## [0.2.0]` entry is written only when the
-implementation PR (branch `core/v0.2`) merges.
+The first executable slice of OMAR OS (per ADR-0003, ratified by PR #4).
 
-### Added (planning artifacts)
-- `decisions/ADR-0003-core-v0.2-project-core.md` — **Proposed**; ratifies the v0.2 scope: a
-  minimal "Project Core" vertical slice (manifest + state + 3-command CLI + validator + tests).
-  Becomes Accepted on merge of PR #4.
-- `docs/CORE_V0.2_MASTER_PROMPT.md` — the Master Implementation Prompt for CORE v0.2: exact
-  scope (IN/OUT), schemas, CLI commands, four validator checks, acceptance criteria, real
-  `pytest` suite, and git workflow. Written for a coding agent (Codex et al.) to execute
-  without re-deciding architecture.
-- ROADMAP v0.2 section updated to the concrete slice with in/out scope and exit criteria.
+### Added
+- `omar_os/` Python package (stdlib only — `json`, `datetime`, `pathlib`, `argparse`,
+  `re`, `dataclasses`; no `jsonschema`/`pydantic` at runtime):
+  - `constants.py` — paths, classifications, lifecycle stages, kebab-case rule.
+  - `schema.py` — `project.json` / `state.json` schemas + inline stdlib validation.
+  - `pathutil.py` — shared path-safety (`Path.resolve()` + `is_relative_to()`, never
+    `os.path.normpath`).
+  - `scaffold.py` — `new-project` copies the single source `projects/_template/`.
+  - `state.py` — `stage` transitions with the principle-J review gate + status mapping.
+  - `validate.py` — four checks: links, classification boundary, scaffold structure, schema.
+  - `__main__.py` — CLI: `new-project` / `validate` / `stage`.
+- `tests/` — first real `pytest` suite (`conftest.py` + 4 test modules) replacing the
+  placeholder; runs offline via a temp copy of the repo.
+- `docs/CORE_V0.2_MASTER_PROMPT.md` — the Master Implementation Prompt that drove this.
 
-### Intent
-Turn the foundation from a doc set into an operable, verifiable core — local-first, offline,
-no cloud, no provider SDKs — while preserving documentation-first. Execution is a later step
-(branch `core/v0.2`, then its implementation PR), not part of this PR.
+### Behavior
+- `new-project` refuses existing names, non-`public` classification in the public repo,
+  and path-unsafe ids (`../`, absolute, slashes, non-kebab-case).
+- `stage complete` is rejected until `review` is in history (principle J).
+- `validate` enforces the public-repo classification boundary and 8-file scaffold presence.
 
-### Notes / open items
+### Notes
 - LICENSE still pending (see ROADMAP).
-- The `tests/` placeholder remains until v0.2 implementation replaces it with the real suite.
-- Do not rename this section to `[0.2.0]` until the implementation ships.
+
+### Hardening (from the same PR #5, after review)
+Closed six attack-test blockers and added regression tests (suite now 30 tests, all
+passing offline on Windows); all within the ADR-0003 scope:
+- Validator scans **declared** `classification` in any repo document (project md, docs,
+  agents, workflows, templates, decisions, knowledge) and fails non-`public` declarations
+  in the public repo (ADR-0002). Prose mentioning classification is not mistaken for a
+  declaration, and code-fence examples are ignored.
+- A project missing `project.json` / `state.json` / any scaffold file **fails** (a bare
+  `project.json` no longer silently passes the 8-file check).
+- Malformed JSON in `project.json` / `state.json` yields a structured validation failure
+  (no crash).
+- Schema hardened: `schema_version` must equal `1.0`; `at` timestamps must match RFC3339
+  UTC (`YYYY-MM-DDThh:mm:ssZ`); `source_of_truth` / `success_criteria` / `blockers` must be
+  string lists; history `stage`/`at`/`by` are strictly validated.
+- `stage <project>` with a traversal/unsafe id raises a clean `StateError` (no traceback).
+- `new-project` refuses an incomplete single-source template.
+- Test fixture corrected to actually use its temp template copy.
 
 ## [0.1.2] — 2026-08-29 — Post-merge consistency (PR #2)
 

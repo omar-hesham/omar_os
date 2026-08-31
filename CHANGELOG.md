@@ -32,29 +32,23 @@ The first executable slice of OMAR OS (per ADR-0003, ratified by PR #4).
 ### Notes
 - LICENSE still pending (see ROADMAP).
 
-## [0.2.1] — 2026-08-29 — Hardening (attack-test fixes)
-
-Follow-up to PR #5 after review. Closed six attack-test blockers and added regression
-tests (suite now 30 tests, all passing offline on Windows):
-
-- Validator now scans **declared** `classification` outside project manifests (docs,
-  agents, workflows, templates, decisions, knowledge) and fails any non-`public`
-  declaration in the public repo (ADR-0002).
-- A project missing `project.json` (or any of the 8 required files) now **fails**
-  instead of silently passing.
-- Malformed JSON in `project.json` / `state.json` produces a structured validation
-  failure (no crash).
-- `state.json` history validation hardened: each entry's `stage` must be a legal stage,
-  `at` a non-empty RFC3339 string, `by` a non-empty string.
-- `stage <project>` with a traversal/unsafe id now raises a clean `StateError` (no
-  traceback).
-- `new-project` refuses when the single-source template is incomplete (missing any of
-  the 6 scaffold files) instead of silently scaffolding a malformed project.
-
-Also fixed the test fixture to actually use the temp template copy it claims to use.
-
-### Notes
-- No scope change from ADR-0003; all fixes are within the CORE v0.2 vertical slice.
+### Hardening (from the same PR #5, after review)
+Closed six attack-test blockers and added regression tests (suite now 30 tests, all
+passing offline on Windows); all within the ADR-0003 scope:
+- Validator scans **declared** `classification` in any repo document (project md, docs,
+  agents, workflows, templates, decisions, knowledge) and fails non-`public` declarations
+  in the public repo (ADR-0002). Prose mentioning classification is not mistaken for a
+  declaration, and code-fence examples are ignored.
+- A project missing `project.json` / `state.json` / any scaffold file **fails** (a bare
+  `project.json` no longer silently passes the 8-file check).
+- Malformed JSON in `project.json` / `state.json` yields a structured validation failure
+  (no crash).
+- Schema hardened: `schema_version` must equal `1.0`; `at` timestamps must match RFC3339
+  UTC (`YYYY-MM-DDThh:mm:ssZ`); `source_of_truth` / `success_criteria` / `blockers` must be
+  string lists; history `stage`/`at`/`by` are strictly validated.
+- `stage <project>` with a traversal/unsafe id raises a clean `StateError` (no traceback).
+- `new-project` refuses an incomplete single-source template.
+- Test fixture corrected to actually use its temp template copy.
 
 ## [0.1.2] — 2026-08-29 — Post-merge consistency (PR #2)
 

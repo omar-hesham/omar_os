@@ -114,14 +114,22 @@ def check_classification(projects_dir: Path, root: Path | None = None) -> list[s
                     f"in public repo (must be {constants.PUBLIC_CLASSIFICATION!r})"
                 )
 
-    # 2. Any declared classification field (top-level) in scanned documents that
-    #    is not `public`. We scan common doc roots but only flag an explicit,
-    #    non-public declaration (implicitly-public docs are ignored).
-    for sub in ("docs", "agents", "workflows", "templates", "decisions", "knowledge"):
-        d = scan_root / sub
+    # 2. Any declared classification field (a real class value) in scanned documents
+    #    that is not `public`. We scan common doc roots plus real project markdown
+    #    files. Only an explicit, non-public declaration is flagged; implicitly-public
+    #    docs (no declaration) and prose mentioning classification are ignored.
+    scan_dirs = [
+        projects_dir,
+        *(scan_root / s for s in ("docs", "agents", "workflows", "templates", "decisions", "knowledge")),
+    ]
+    for d in scan_dirs:
         if not d.is_dir():
             continue
         for f in d.rglob("*.md"):
+            if f.parent == projects_dir and f.parent.name == "_template":
+                continue
+            if projects_dir in f.parents and f.parent.name == "_template":
+                continue
             try:
                 text = f.read_text(encoding="utf-8")
             except (OSError, UnicodeDecodeError):
@@ -136,25 +144,32 @@ def check_classification(projects_dir: Path, root: Path | None = None) -> list[s
 
 
 # A simple front-matter / inline declaration parser for `classification:`.
-_CLASS_RE = re.compile(r"^\s*classification\s*:\s*[\"']?([a-zA-Z]+)[\"']?\s*$", re.MULTILINE)
+# Only matches a value that is itself a real classification keyword, so prose like
+# "classification: one of the four" is NOT mistaken for a declaration. Code fences are
+# stripped first so examples inside ``` blocks are never flagged.
+_CLASS_RE = re.compile(
+    r"^\s*classification\s*:\s*[\"']?(public|internal|confidential|restricted)[\"']?\s*$",
+    re.MULTILINE | re.IGNORECASE,
+)
+_FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 
 
 def _declared_classification(text: str) -> str | None:
-    """Return a top-level `classification:` value if declared, else None."""
-    m = _CLASS_RE.search(text)
+    """Return a declared `classification:` value (a real class) if present, else None."""
+    stripped = _FENCE_RE.sub("", text)
+    m = _CLASS_RE.search(stripped)
     if not m:
         return None
-    val = m.group(1).lower()
-    return val if val in constants.CLASSIFICATIONS else val
+    return m.group(1).lower()
 
 
 def check_scaffold(projects_dir: Path) -> list[str]:
     """Each real project must contain the 8 required files.
 
     A directory under ``projects/`` (excluding ``_template``) that contains any
-    project artifact (``state.json`` or any of the 6 scaffold markdown files) but
-    is missing ``project.json`` or any other required file is a failure — missing
-    files must not be silently skipped.
+    project artifact — ``project.json``, ``state.json``, or any of the 6 scaffold
+    markdown files — but is missing any required file is a failure. A bare
+    ``project.json`` (no state.json, no markdown) therefore fails.
     """
     problems: list[str] = []
     if not projects_dir.is_dir():
@@ -162,8 +177,10 @@ def check_scaffold(projects_dir: Path) -> list[str]:
     for proj in projects_dir.iterdir():
         if not proj.is_dir() or proj.name == "_template":
             continue
-        has_any_artifact = (proj / constants.STATE_FILE).exists() or any(
-            (proj / md).exists() for md in constants.SCAFFOLD_MD_FILES
+        has_any_artifact = (
+            (proj / constants.MANIFEST_FILE).exists()
+            or (proj / constants.STATE_FILE).exists()
+            or any((proj / md).exists() for md in constants.SCAFFOLD_MD_FILES)
         )
         if not has_any_artifact:
             continue  # an unrelated directory; not our concern

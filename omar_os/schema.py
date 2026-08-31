@@ -73,7 +73,23 @@ def _check_required(data: dict, required: dict, doc_name: str) -> None:
             )
 
 
-def _check_enum(value: str, allowed, field_name: str, doc_name: str) -> None:
+_RFC3339_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+
+
+def _check_rfc3339(value: str, field_name: str, doc_name: str) -> None:
+    if not isinstance(value, str) or not _RFC3339_RE.match(value):
+        raise SchemaError(
+            f"{doc_name}.{field_name} must be RFC3339 UTC (YYYY-MM-DDThh:mm:ssZ); "
+            f"got {value!r}"
+        )
+
+
+def _check_str_list(value, field_name: str, doc_name: str) -> None:
+    if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
+        raise SchemaError(f"{doc_name}.{field_name} must be a list of strings")
+
+
+def _check_enum(value, allowed, field_name: str, doc_name: str) -> None:
     if value not in allowed:
         raise SchemaError(
             f"{doc_name}.{field_name} must be one of {list(allowed)}; got {value!r}"
@@ -83,19 +99,33 @@ def _check_enum(value: str, allowed, field_name: str, doc_name: str) -> None:
 def validate_project(data: dict) -> None:
     """Validate a project.json manifest. Raises SchemaError on failure."""
     _check_required(data, PROJECT_REQUIRED, MANIFEST_FILE)
+    if data["schema_version"] != SCHEMA_VERSION:
+        raise SchemaError(
+            f"{MANIFEST_FILE}.schema_version must be {SCHEMA_VERSION!r}; "
+            f"got {data['schema_version']!r}"
+        )
     _check_enum(data["effort_level"], EFFORT_LEVELS, "effort_level", MANIFEST_FILE)
     _check_enum(
         data["classification"], CLASSIFICATIONS, "classification", MANIFEST_FILE
     )
     if not re.match(KEBAB_CASE_RE, data["id"]):
         raise SchemaError(f"{MANIFEST_FILE}.id must be kebab-case; got {data['id']!r}")
+    _check_str_list(data["source_of_truth"], "source_of_truth", MANIFEST_FILE)
+    _check_str_list(data["success_criteria"], "success_criteria", MANIFEST_FILE)
+    _check_rfc3339(data["created_at"], "created_at", MANIFEST_FILE)
 
 
 def validate_state(data: dict) -> None:
     """Validate a state.json document. Raises SchemaError on failure."""
     _check_required(data, STATE_REQUIRED, STATE_FILE)
+    if data["schema_version"] != SCHEMA_VERSION:
+        raise SchemaError(
+            f"{STATE_FILE}.schema_version must be {SCHEMA_VERSION!r}; "
+            f"got {data['schema_version']!r}"
+        )
     _check_enum(data["current_stage"], LIFECYCLE_STAGES, "current_stage", STATE_FILE)
     _check_enum(data["status"], STATUSES, "status", STATE_FILE)
+    _check_str_list(data["blockers"], "blockers", STATE_FILE)
     # history entries must be dicts with stage/at/by, each well-typed.
     for i, entry in enumerate(data["history"]):
         if not isinstance(entry, dict):
@@ -108,10 +138,10 @@ def validate_state(data: dict) -> None:
                 f"{STATE_FILE}.history[{i}].stage must be a legal stage; "
                 f"got {entry['stage']!r}"
             )
-        if not isinstance(entry["at"], str) or not entry["at"]:
+        if not isinstance(entry["at"], str) or not _RFC3339_RE.match(entry["at"]):
             raise SchemaError(
-                f"{STATE_FILE}.history[{i}].at must be a non-empty RFC3339 string; "
-                f"got {entry['at']!r}"
+                f"{STATE_FILE}.history[{i}].at must be RFC3339 UTC "
+                f"(YYYY-MM-DDThh:mm:ssZ); got {entry['at']!r}"
             )
         if not isinstance(entry["by"], str) or not entry["by"]:
             raise SchemaError(

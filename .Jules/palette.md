@@ -1,0 +1,3 @@
+## 2024-09-14 - Improve CLI validation output scannability
+**Learning:** In zero-dependency CLI environments without ANSI color codes, text output can quickly become a wall of monotonous text. Adding simple unicode symbols (like ✓ and ✗) dramatically improves the visual scannability and user experience of success/failure reports without adding complexity.
+**Action:** When designing or updating CLI output, especially validation or test reports, always include distinct unicode indicators alongside text status words (e.g. `✓ PASS` instead of just `PASS`) to make the outcome instantly recognizable at a glance.

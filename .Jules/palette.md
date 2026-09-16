@@ -1,0 +1,3 @@
+## 2026-08-30 - Added Unicode Symbols to CLI Output
+**Learning:** For pure CLI projects where external dependencies (like `colorama` or `rich`) are not allowed, visual scanability of output is crucial. Adding simple universally supported Unicode symbols like ✓ and ✗ provides an immediate visual distinction between success and failure without relying on ANSI color codes or external libraries. This significantly improves the UX of the CLI tool.
+**Action:** When working on zero-dependency CLI projects, always prefer using standard Unicode symbols for success/error states to improve readability and scanability.

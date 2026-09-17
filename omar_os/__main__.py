@@ -23,9 +23,9 @@ def _cmd_new_project(args) -> int:
             classification=args.classification,
         )
     except ScaffoldError as exc:
-        print(f"error: {exc}", file=sys.stderr)
+        print(f"✗ error: {exc}", file=sys.stderr)
         return 1
-    print(f"created project: {dest}")
+    print(f"✓ created project: {dest}")
     return 0
 
 
@@ -40,10 +40,10 @@ def _cmd_stage(args) -> int:
     try:
         new_state = state.stage(args.project, args.stage, by=args.by)
     except StateError as exc:
-        print(f"error: {exc}", file=sys.stderr)
+        print(f"✗ error: {exc}", file=sys.stderr)
         return 1
     print(
-        f"staged {args.project}: current_stage={new_state['current_stage']} "
+        f"✓ staged {args.project}: current_stage={new_state['current_stage']} "
         f"status={new_state['status']}"
     )
     return 0

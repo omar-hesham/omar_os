@@ -12,6 +12,7 @@ from pathlib import Path
 from . import scaffold, state, validate as validate_mod
 from .scaffold import ScaffoldError
 from .state import StateError
+from .constants import LIFECYCLE_STAGES
 
 
 def _cmd_new_project(args) -> int:
@@ -56,9 +57,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_new = sub.add_parser("new-project", help="scaffold a new project")
-    p_new.add_argument("name")
-    p_new.add_argument("--owner", default="Omar")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low")
+    p_new.add_argument("name", help="name of the new project")
+    p_new.add_argument("--owner", default="Omar", help="owner of the project (default: Omar)")
+    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level (default: low)")
     p_new.add_argument(
         "--classification",
         default="public",
@@ -71,9 +72,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_val.set_defaults(func=_cmd_validate)
 
     p_stage = sub.add_parser("stage", help="transition a project lifecycle stage")
-    p_stage.add_argument("project")
-    p_stage.add_argument("stage")
-    p_stage.add_argument("--by", default="Omar")
+    p_stage.add_argument("project", help="name of the project")
+    p_stage.add_argument("stage", choices=LIFECYCLE_STAGES, metavar="STAGE", help="target lifecycle stage")
+    p_stage.add_argument("--by", default="Omar", help="who is making the transition (default: Omar)")
     p_stage.set_defaults(func=_cmd_stage)
 
     return parser

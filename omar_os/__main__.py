@@ -56,9 +56,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_new = sub.add_parser("new-project", help="scaffold a new project")
-    p_new.add_argument("name")
-    p_new.add_argument("--owner", default="Omar")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low")
+    p_new.add_argument("name", help="project name (kebab-case)")
+    p_new.add_argument("--owner", default="Omar", help="project owner")
+    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="estimated effort level")
     p_new.add_argument(
         "--classification",
         default="public",
@@ -71,9 +71,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_val.set_defaults(func=_cmd_validate)
 
     p_stage = sub.add_parser("stage", help="transition a project lifecycle stage")
-    p_stage.add_argument("project")
-    p_stage.add_argument("stage")
-    p_stage.add_argument("--by", default="Omar")
+    p_stage.add_argument("project", help="project name")
+    p_stage.add_argument("stage", help="target lifecycle stage")
+    p_stage.add_argument("--by", default="Omar", help="person advancing the stage")
     p_stage.set_defaults(func=_cmd_stage)
 
     return parser

@@ -54,7 +54,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="omar_os", description="OMAR OS Project Core (v0.2)"
     )
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(title="commands", dest="command", metavar="COMMAND", required=True)
 
     p_new = sub.add_parser("new-project", help="scaffold a new project")
     p_new.add_argument("name", help="name of the project to create (kebab-case)")
@@ -73,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_stage = sub.add_parser("stage", help="transition a project lifecycle stage")
     p_stage.add_argument("project", help="name of the project to update")
-    p_stage.add_argument("stage", choices=LIFECYCLE_STAGES, help="target lifecycle stage")
+    p_stage.add_argument("stage", choices=LIFECYCLE_STAGES, metavar="STAGE", help="target lifecycle stage")
     p_stage.add_argument("--by", default="Omar", help="person or agent making the change")
     p_stage.set_defaults(func=_cmd_stage)
 

@@ -54,12 +54,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="omar_os", description="OMAR OS Project Core (v0.2)"
     )
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
 
     p_new = sub.add_parser("new-project", help="scaffold a new project")
     p_new.add_argument("name", help="name of the project to create (kebab-case)")
     p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level")
+    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level: %(choices)s", metavar="EFFORT")
     p_new.add_argument(
         "--classification",
         default="public",
@@ -73,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_stage = sub.add_parser("stage", help="transition a project lifecycle stage")
     p_stage.add_argument("project", help="name of the project to update")
-    p_stage.add_argument("stage", choices=LIFECYCLE_STAGES, help="target lifecycle stage")
+    p_stage.add_argument("stage", choices=LIFECYCLE_STAGES, help="target lifecycle stage: %(choices)s", metavar="STAGE")
     p_stage.add_argument("--by", default="Omar", help="person or agent making the change")
     p_stage.set_defaults(func=_cmd_stage)
 

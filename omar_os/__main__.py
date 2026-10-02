@@ -54,27 +54,28 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="omar_os", description="OMAR OS Project Core (v0.2)"
     )
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
 
     p_new = sub.add_parser("new-project", help="scaffold a new project")
-    p_new.add_argument("name", help="name of the project to create (kebab-case)")
-    p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level")
+    p_new.add_argument("name", metavar="NAME", help="name of the project to create (kebab-case)")
+    p_new.add_argument("--owner", metavar="OWNER", default="Omar", help="owner of the project")
+    p_new.add_argument("--effort", metavar="LEVEL", choices=["low", "medium", "high"], default="low", help="expected effort level (choices: %(choices)s)")
     p_new.add_argument(
         "--classification",
+        metavar="CLASS",
         default="public",
         help="must be 'public' for the public repo (ADR-0002)",
     )
     p_new.set_defaults(func=_cmd_new_project)
 
     p_val = sub.add_parser("validate", help="run the four validation checks")
-    p_val.add_argument("path", nargs="?", default=None, help="root to validate")
+    p_val.add_argument("path", metavar="PATH", nargs="?", default=None, help="root to validate")
     p_val.set_defaults(func=_cmd_validate)
 
     p_stage = sub.add_parser("stage", help="transition a project lifecycle stage")
-    p_stage.add_argument("project", help="name of the project to update")
-    p_stage.add_argument("stage", choices=LIFECYCLE_STAGES, help="target lifecycle stage")
-    p_stage.add_argument("--by", default="Omar", help="person or agent making the change")
+    p_stage.add_argument("project", metavar="PROJECT", help="name of the project to update")
+    p_stage.add_argument("stage", metavar="STAGE", choices=LIFECYCLE_STAGES, help="target lifecycle stage (choices: %(choices)s)")
+    p_stage.add_argument("--by", metavar="AUTHOR", default="Omar", help="person or agent making the change")
     p_stage.set_defaults(func=_cmd_stage)
 
     return parser

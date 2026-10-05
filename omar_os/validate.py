@@ -193,6 +193,8 @@ def check_scaffold(projects_dir: Path) -> list[str]:
 def check_schema(projects_dir: Path) -> list[str]:
     """Every project.json / state.json must validate against the schema."""
     problems: list[str] = []
+    if not projects_dir.is_dir():
+        return problems
     for proj in projects_dir.iterdir():
         if not proj.is_dir() or proj.name == "_template":
             continue

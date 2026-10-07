@@ -31,7 +31,11 @@ def _cmd_new_project(args) -> int:
 
 def _cmd_validate(args) -> int:
     root = Path(args.path) if args.path else None
-    ok, report = validate_mod.validate(root)
+    try:
+        ok, report = validate_mod.validate(root)
+    except OSError as exc:
+        print(f"✗ error: {exc}", file=sys.stderr)
+        return 1
     print(report)
     return 0 if ok else 1
 
@@ -50,7 +54,7 @@ def _cmd_stage(args) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    from .constants import LIFECYCLE_STAGES
+    from .constants import LIFECYCLE_STAGES, EFFORT_LEVELS
     parser = argparse.ArgumentParser(
         prog="omar_os", description="OMAR OS Project Core (v0.2)"
     )
@@ -59,7 +63,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_new = sub.add_parser("new-project", help="scaffold a new project")
     p_new.add_argument("name", help="name of the project to create (kebab-case)")
     p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level (choices: %(choices)s)")
+    p_new.add_argument("--effort", choices=EFFORT_LEVELS, metavar="LEVEL", default="low", help="expected effort level (choices: %(choices)s)")
     p_new.add_argument(
         "--classification",
         default="public",

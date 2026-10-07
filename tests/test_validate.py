@@ -153,3 +153,13 @@ def test_validate_fails_null_by(tmp_repo):
     ok, report = validate_mod.validate(tmp_repo)
     assert ok is False
     assert "history" in report
+
+def test_cli_validate_nonexistent_path(capsys):
+    from omar_os.__main__ import main
+    import pytest
+
+    # main() is designed to return the exit code, not call sys.exit
+    assert main(["validate", "some-nonexistent-path-12345"]) == 1
+    out, err = capsys.readouterr()
+    assert "✗ error:" in err
+    assert "some-nonexistent-path-12345" in err

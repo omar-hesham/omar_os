@@ -31,6 +31,9 @@ def _cmd_new_project(args) -> int:
 
 def _cmd_validate(args) -> int:
     root = Path(args.path) if args.path else None
+    if root and not root.exists():
+        print(f"✗ error: path '{root}' does not exist", file=sys.stderr)
+        return 1
     ok, report = validate_mod.validate(root)
     print(report)
     return 0 if ok else 1
@@ -50,7 +53,7 @@ def _cmd_stage(args) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    from .constants import LIFECYCLE_STAGES
+    from .constants import LIFECYCLE_STAGES, CLASSIFICATIONS
     parser = argparse.ArgumentParser(
         prog="omar_os", description="OMAR OS Project Core (v0.2)"
     )
@@ -59,11 +62,19 @@ def build_parser() -> argparse.ArgumentParser:
     p_new = sub.add_parser("new-project", help="scaffold a new project")
     p_new.add_argument("name", help="name of the project to create (kebab-case)")
     p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level (choices: %(choices)s)")
+    p_new.add_argument(
+        "--effort",
+        choices=["low", "medium", "high"],
+        default="low",
+        metavar="LEVEL",
+        help="expected effort level (choices: %(choices)s)"
+    )
     p_new.add_argument(
         "--classification",
+        choices=CLASSIFICATIONS,
         default="public",
-        help="must be 'public' for the public repo (ADR-0002)",
+        metavar="CLASS",
+        help="must be 'public' for the public repo (ADR-0002) (choices: %(choices)s)",
     )
     p_new.set_defaults(func=_cmd_new_project)
 

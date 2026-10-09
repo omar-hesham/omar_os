@@ -59,7 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_new = sub.add_parser("new-project", help="scaffold a new project")
     p_new.add_argument("name", help="name of the project to create (kebab-case)")
     p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level (choices: %(choices)s)")
+    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", metavar="EFFORT", help="expected effort level (choices: %(choices)s)")
     p_new.add_argument(
         "--classification",
         default="public",

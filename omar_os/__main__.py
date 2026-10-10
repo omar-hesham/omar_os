@@ -31,6 +31,9 @@ def _cmd_new_project(args) -> int:
 
 def _cmd_validate(args) -> int:
     root = Path(args.path) if args.path else None
+    if root is not None and not root.is_dir():
+        print(f"✗ error: path is not a directory or does not exist: '{args.path}'", file=sys.stderr)
+        return 1
     ok, report = validate_mod.validate(root)
     print(report)
     return 0 if ok else 1

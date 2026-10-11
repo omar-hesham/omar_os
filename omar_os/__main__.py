@@ -31,6 +31,12 @@ def _cmd_new_project(args) -> int:
 
 def _cmd_validate(args) -> int:
     root = Path(args.path) if args.path else None
+    if root is not None and not root.exists():
+        print(f"✗ error: path does not exist: '{root}'", file=sys.stderr)
+        return 1
+    if root is not None and not root.is_dir():
+        print(f"✗ error: path is not a directory: '{root}'", file=sys.stderr)
+        return 1
     ok, report = validate_mod.validate(root)
     print(report)
     return 0 if ok else 1
@@ -59,7 +65,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_new = sub.add_parser("new-project", help="scaffold a new project")
     p_new.add_argument("name", help="name of the project to create (kebab-case)")
     p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level (choices: %(choices)s)")
+    p_new.add_argument("--effort", choices=["low", "medium", "high"], metavar="EFFORT", default="low", help="expected effort level (choices: %(choices)s)")
     p_new.add_argument(
         "--classification",
         default="public",

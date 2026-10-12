@@ -31,7 +31,15 @@ def _cmd_new_project(args) -> int:
 
 def _cmd_validate(args) -> int:
     root = Path(args.path) if args.path else None
-    ok, report = validate_mod.validate(root)
+    if root is not None and not root.is_dir():
+        print(f"✗ error: path does not exist or is not a directory: {args.path}", file=sys.stderr)
+        return 1
+
+    try:
+        ok, report = validate_mod.validate(root)
+    except Exception as exc:
+        print(f"✗ error: {exc}", file=sys.stderr)
+        return 1
     print(report)
     return 0 if ok else 1
 
@@ -57,9 +65,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
 
     p_new = sub.add_parser("new-project", help="scaffold a new project")
-    p_new.add_argument("name", help="name of the project to create (kebab-case)")
+    p_new.add_argument("name", metavar="NAME", help="name of the project to create (kebab-case)")
     p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level (choices: %(choices)s)")
+    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", metavar="EFFORT", help="expected effort level (choices: %(choices)s)")
     p_new.add_argument(
         "--classification",
         default="public",
@@ -68,11 +76,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_new.set_defaults(func=_cmd_new_project)
 
     p_val = sub.add_parser("validate", help="run the four validation checks")
-    p_val.add_argument("path", nargs="?", default=None, help="root to validate")
+    p_val.add_argument("path", nargs="?", default=None, metavar="PATH", help="root to validate")
     p_val.set_defaults(func=_cmd_validate)
 
     p_stage = sub.add_parser("stage", help="transition a project lifecycle stage")
-    p_stage.add_argument("project", help="name of the project to update")
+    p_stage.add_argument("project", metavar="PROJECT", help="name of the project to update")
     p_stage.add_argument("stage", choices=LIFECYCLE_STAGES, metavar="STAGE", help="target lifecycle stage (choices: %(choices)s)")
     p_stage.add_argument("--by", default="Omar", help="person or agent making the change")
     p_stage.set_defaults(func=_cmd_stage)

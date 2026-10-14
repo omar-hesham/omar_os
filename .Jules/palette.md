@@ -5,3 +5,7 @@
 ## 2024-03-24 - Python argparse UX improvements
 **Learning:** For Python CLI tools using `argparse`, long lists of choices (like `LIFECYCLE_STAGES`) clutter the `usage:` block, making it hard to scan. By using `metavar`, we can hide the massive list from the usage string. Using `%(choices)s` in the `help=` text ensures options remain visible in the detailed help text instead, providing a much cleaner user experience.
 **Action:** Always use `metavar` for positional arguments or subparsers with many choices to keep usage blocks concise. Use `%(choices)s` in the `help` string to present the available choices neatly.
+
+## 2024-05-18 - CLI Error Handling
+**Learning:** Raw Python stack traces are intimidating and ruin the developer experience (DX) when users provide invalid paths. Catching path errors early and returning a simple string formatted like `✗ error: path '...' does not exist` provides a much cleaner, more actionable failure state.
+**Action:** Always wrap execution entry points with try/except blocks or proactive path validation to intercept predictable failures and print formatted error strings instead of traces.

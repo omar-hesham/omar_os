@@ -50,7 +50,7 @@ def _cmd_stage(args) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    from .constants import LIFECYCLE_STAGES
+    from .constants import LIFECYCLE_STAGES, CLASSIFICATIONS, EFFORT_LEVELS
     parser = argparse.ArgumentParser(
         prog="omar_os", description="OMAR OS Project Core (v0.2)"
     )
@@ -59,11 +59,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_new = sub.add_parser("new-project", help="scaffold a new project")
     p_new.add_argument("name", help="name of the project to create (kebab-case)")
     p_new.add_argument("--owner", default="Omar", help="owner of the project")
-    p_new.add_argument("--effort", choices=["low", "medium", "high"], default="low", help="expected effort level (choices: %(choices)s)")
+    p_new.add_argument("--effort", choices=EFFORT_LEVELS, default="low", metavar="EFFORT", help="expected effort level (choices: %(choices)s)")
     p_new.add_argument(
         "--classification",
+        choices=CLASSIFICATIONS,
         default="public",
-        help="must be 'public' for the public repo (ADR-0002)",
+        metavar="CLASS",
+        help="must be 'public' for the public repo (ADR-0002) (choices: %(choices)s)",
     )
     p_new.set_defaults(func=_cmd_new_project)
 

@@ -230,7 +230,7 @@ def format_report(results: dict[str, list[str]]) -> str:
         status = "✓ PASS" if not problems else f"✗ FAIL ({len(problems)})"
         lines.append(f"  [{status}] {name}")
         for p in problems:
-            lines.append(f"        - {p}")
+            lines.append(f"      ✗ {p}")
     lines.append(f"Overall: {'✓ PASS' if total == 0 else f'✗ FAIL ({total} issues)'}")
     return "\n".join(lines)
 
